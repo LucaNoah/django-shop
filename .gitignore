@@ -1,0 +1,14 @@
+# Geheime Werte – niemals auf GitHub
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Hochgeladene und gesammelte Dateien
+/media/
+/staticfiles/
+
+# Editor und Betriebssystem
+.vscode/
+.DS_Store
