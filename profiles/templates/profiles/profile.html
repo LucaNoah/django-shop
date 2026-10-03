@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block head_title %}Mein Konto{% endblock head_title %}
+
+{% block content %}
+<h1>Mein Konto</h1>
+<p>Angemeldet als {{ user.email|default:user.username }}</p>
+
+<section>
+    <h2>Standard-Lieferadresse</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Adresse speichern</button>
+    </form>
+</section>
+
+<section>
+    <h2>Meine Bestellungen</h2>
+    {% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>Bestellnummer</th>
+                <th>Datum</th>
+                <th>Status</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td><a href="{% url 'checkout:success' order.order_number %}">{{ order.order_number|truncatechars:13 }}</a></td>
+                <td>{{ order.created_at|date:"d.m.Y" }}</td>
+                <td>{{ order.get_status_display }}</td>
+                <td>CHF {{ order.grand_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Du hast noch keine Bestellungen.</p>
+    {% endif %}
+</section>
+{% endblock content %}
