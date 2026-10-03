@@ -12,6 +12,7 @@
         <nav>
             <a href="{% url 'home' %}">Startseite</a>
             <a href="{% url 'products:product_list' %}">Produkte</a>
+            <a href="{% url 'bag:detail' %}">Warenkorb ({{ bag_count }})</a>
             {% if user.is_authenticated %}
                 | Angemeldet als {{ user.email|default:user.username }}
                 | <a href="{% url 'account_logout' %}">Abmelden</a>

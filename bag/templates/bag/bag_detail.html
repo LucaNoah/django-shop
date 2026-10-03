@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head_title %}Warenkorb{% endblock head_title %}
+
+{% block content %}
+<h1>Warenkorb</h1>
+
+{% if bag_items %}
+<table>
+    <thead>
+        <tr>
+            <th>Produkt</th>
+            <th>Preis</th>
+            <th>Menge</th>
+            <th>Zwischensumme</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in bag_items %}
+        <tr>
+            <td><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></td>
+            <td>CHF {{ item.product.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>CHF {{ item.subtotal }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p>Warenwert: CHF {{ bag_total }}</p>
+<p>Versand: {% if delivery %}CHF {{ delivery }}{% else %}gratis{% endif %}</p>
+{% if delivery %}
+<p>Noch CHF {{ free_delivery_missing }} bis zum Gratisversand (ab CHF {{ free_delivery_threshold }}).</p>
+{% endif %}
+<p><strong>Total: CHF {{ grand_total }}</strong></p>
+{% else %}
+<p>Dein Warenkorb ist leer.</p>
+<p><a href="{% url 'products:product_list' %}">Zu den Produkten</a></p>
+{% endif %}
+{% endblock content %}
