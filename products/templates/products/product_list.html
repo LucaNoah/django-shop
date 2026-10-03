@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Produkte</h1>
-<form method="get" action="{% url 'products:product_list' %}">
+<form method="get" class="filter-form" action="{% url 'products:product_list' %}">
     <input type="search" name="q" value="{{ query }}" placeholder="Produkte suchen">
 
     <select name="category">
@@ -30,8 +30,9 @@
     {% if query %}für „{{ query }}“{% endif %}
 </p>
 
+<div class="product-grid">
 {% for product in products %}
-<article>
+<article class="product-card">
     <h2><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
     {% if product.image %}
     <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
@@ -43,4 +44,5 @@
 {% empty %}
 <p>Noch keine Produkte vorhanden.</p>
 {% endfor %}
+</div>
 {% endblock content %}

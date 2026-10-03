@@ -1,39 +1,47 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block head_title %}Shop{% endblock head_title %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_head %}{% endblock extra_head %}
 </head>
 <body>
     {% block body %}
-    <header>
-        <nav>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Hauptnavigation">
             <a href="{% url 'home' %}">Startseite</a>
             <a href="{% url 'products:product_list' %}">Produkte</a>
             <a href="{% url 'bag:detail' %}">Warenkorb ({{ bag_count }})</a>
-            {% if user.is_authenticated %}
-                | Angemeldet als {{ user.email|default:user.username }}
-                | <a href="{% url 'account_logout' %}">Abmelden</a>
-            {% else %}
-                | <a href="{% url 'account_login' %}">Anmelden</a>
-                | <a href="{% url 'account_signup' %}">Registrieren</a>
-            {% endif %}
+            <span class="site-nav__user">
+                {% if user.is_authenticated %}
+                    {{ user.email|default:user.username }}
+                    · <a href="{% url 'account_logout' %}">Abmelden</a>
+                {% else %}
+                    <a href="{% url 'account_login' %}">Anmelden</a>
+                    · <a href="{% url 'account_signup' %}">Registrieren</a>
+                {% endif %}
+            </span>
         </nav>
     </header>
 
     {% if messages %}
-    <ul>
+    <ul class="messages">
         {% for message in messages %}
-        <li>{{ message }}</li>
+        <li class="message message-{{ message.tags }}">{{ message }}</li>
         {% endfor %}
     </ul>
     {% endif %}
 
-    <main>
+    <main class="site-main">
         {% block content %}{% endblock content %}
     </main>
+
+    <footer class="site-footer">
+        Arbeitsversion – das Design folgt.
+    </footer>
     {% endblock body %}
     {% block extra_body %}{% endblock extra_body %}
 </body>
