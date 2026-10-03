@@ -13,6 +13,7 @@
             <th>Preis</th>
             <th>Menge</th>
             <th>Zwischensumme</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -20,8 +21,20 @@
         <tr>
             <td><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></td>
             <td>CHF {{ item.product.price }}</td>
-            <td>{{ item.quantity }}</td>
+            <td>
+                <form method="post" action="{% url 'bag:update' item.product.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" aria-label="Menge">
+                    <button type="submit">Ändern</button>
+                </form>
+            </td>
             <td>CHF {{ item.subtotal }}</td>
+            <td>
+                <form method="post" action="{% url 'bag:remove' item.product.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Entfernen</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

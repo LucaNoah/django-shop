@@ -41,3 +41,33 @@ def bag_add(request, product_id):
     else:
         messages.success(request, f"{product.name} im Warenkorb: {actual} Stück.")
     return redirect(product.get_absolute_url())
+
+
+@require_POST
+def bag_update(request, product_id):
+    """Menge im Warenkorb ändern. 0 entfernt das Produkt."""
+    product = get_object_or_404(Product, id=product_id)
+    bag = Bag(request)
+    wanted = _get_quantity(request)
+    bag.set_quantity(product, wanted)
+    actual = bag.get_quantity(product)
+
+    if actual == 0:
+        messages.success(request, f"{product.name} wurde aus dem Warenkorb entfernt.")
+    elif actual < wanted:
+        messages.warning(
+            request,
+            f"Nur {product.stock} Stück auf Lager. Menge auf {actual} gesetzt.",
+        )
+    else:
+        messages.success(request, f"Menge von {product.name} auf {actual} geändert.")
+    return redirect("bag:detail")
+
+
+@require_POST
+def bag_remove(request, product_id):
+    """Produkt komplett aus dem Warenkorb nehmen."""
+    product = get_object_or_404(Product, id=product_id)
+    Bag(request).remove(product)
+    messages.success(request, f"{product.name} wurde aus dem Warenkorb entfernt.")
+    return redirect("bag:detail")
