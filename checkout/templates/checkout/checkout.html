@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block head_title %}Kasse{% endblock head_title %}
+
+{% block content %}
+<h1>Kasse</h1>
+
+<h2>Deine Bestellung</h2>
+<ul>
+    {% for item in bag_items %}
+    <li>{{ item.quantity }} × {{ item.product.name }} – CHF {{ item.subtotal }}</li>
+    {% endfor %}
+</ul>
+<p>Warenwert: CHF {{ bag_total }}</p>
+<p>Versand: {% if delivery %}CHF {{ delivery }}{% else %}gratis{% endif %}</p>
+<p><strong>Total: CHF {{ grand_total }}</strong></p>
+
+<h2>Lieferadresse</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Bestellung absenden</button>
+</form>
+
+<p><a href="{% url 'bag:detail' %}">← Zurück zum Warenkorb</a></p>
+{% endblock content %}

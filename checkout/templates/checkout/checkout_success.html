@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block head_title %}Danke für deine Bestellung{% endblock head_title %}
+
+{% block content %}
+<h1>Danke für deine Bestellung!</h1>
+<p>Bestellnummer: <strong>{{ order.order_number }}</strong></p>
+<p>Datum: {{ order.created_at|date:"d.m.Y H:i" }}</p>
+<p>Status: {{ order.get_status_display }}</p>
+
+<h2>Artikel</h2>
+<ul>
+    {% for item in order.lineitems.all %}
+    <li>{{ item.quantity }} × {{ item.product_name }} à CHF {{ item.unit_price }} = CHF {{ item.lineitem_total }}</li>
+    {% endfor %}
+</ul>
+<p>Warenwert: CHF {{ order.order_total }}</p>
+<p>Versand: CHF {{ order.delivery_cost }}</p>
+<p><strong>Total: CHF {{ order.grand_total }}</strong></p>
+
+<h2>Lieferadresse</h2>
+<p>
+    {{ order.full_name }}<br>
+    {{ order.street_address }}<br>
+    {{ order.postcode }} {{ order.town_or_city }}<br>
+    {{ order.country.name }}
+</p>
+
+<p><a href="{% url 'products:product_list' %}">Weiter einkaufen</a></p>
+{% endblock content %}

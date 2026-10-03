@@ -46,6 +46,7 @@
 <p>Noch CHF {{ free_delivery_missing }} bis zum Gratisversand (ab CHF {{ free_delivery_threshold }}).</p>
 {% endif %}
 <p><strong>Total: CHF {{ grand_total }}</strong></p>
+<p><a href="{% url 'checkout:checkout' %}">Zur Kasse</a></p>
 {% else %}
 <p>Dein Warenkorb ist leer.</p>
 <p><a href="{% url 'products:product_list' %}">Zu den Produkten</a></p>
