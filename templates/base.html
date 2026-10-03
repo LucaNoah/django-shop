@@ -17,7 +17,8 @@
             <a href="{% url 'bag:detail' %}">Warenkorb ({{ bag_count }})</a>
             <span class="site-nav__user">
                 {% if user.is_authenticated %}
-                    {{ user.email|default:user.username }}
+                    <a href="{% url 'profiles:profile' %}">Mein Konto</a>
+                    ({{ user.email|default:user.username }})
                     · <a href="{% url 'account_logout' %}">Abmelden</a>
                 {% else %}
                     <a href="{% url 'account_login' %}">Anmelden</a>

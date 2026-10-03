@@ -19,6 +19,14 @@
 <form method="post">
     {% csrf_token %}
     {{ form }}
+    {% if user.is_authenticated %}
+    <p>
+        <label>
+            <input type="checkbox" name="save_info" checked>
+            Diese Adresse in meinem Konto speichern
+        </label>
+    </p>
+    {% endif %}
     <button type="submit">Bestellung absenden</button>
 </form>
 

@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
 from bag.bag import Bag
+from profiles.models import UserProfile
 
 from .forms import OrderForm
 from .models import Order, OrderLineItem
@@ -48,12 +49,34 @@ def checkout(request):
                 order.update_total()
 
             bag.clear()
+
+            # Adresse im Profil speichern, wenn das Häkchen gesetzt ist
+            if request.user.is_authenticated and request.POST.get("save_info"):
+                profile, _ = UserProfile.objects.get_or_create(user=request.user)
+                profile.default_full_name = order.full_name
+                profile.default_phone_number = order.phone_number
+                profile.default_street_address = order.street_address
+                profile.default_postcode = order.postcode
+                profile.default_town_or_city = order.town_or_city
+                profile.default_country = order.country
+                profile.save()
+
             request.session["last_order_number"] = order.order_number
             return redirect("checkout:success", order_number=order.order_number)
     else:
+        # Formular mit der gespeicherten Adresse vorausfüllen
         initial = {}
         if request.user.is_authenticated:
-            initial["email"] = request.user.email
+            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            initial = {
+                "full_name": profile.default_full_name,
+                "email": request.user.email,
+                "phone_number": profile.default_phone_number,
+                "street_address": profile.default_street_address,
+                "postcode": profile.default_postcode,
+                "town_or_city": profile.default_town_or_city,
+                "country": profile.default_country.code or "CH",
+            }
         form = OrderForm(initial=initial)
 
     return render(request, "checkout/checkout.html", {"form": form})
