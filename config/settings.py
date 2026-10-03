@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.account',
     # Eigene Apps
     'home',
+    'products',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,7 @@ LOGIN_REDIRECT_URL = "/"
 # E-Mail: vorerst im Terminal anzeigen statt wirklich verschicken
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "shop@example.com"
+
+# Hochgeladene Dateien (Produktbilder)
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
