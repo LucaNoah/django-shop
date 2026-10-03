@@ -7,6 +7,13 @@ from products.models import Product
 SESSION_KEY = "bag"
 
 
+def calculate_delivery(total):
+    """Versandkosten für einen Warenwert: gratis ab Schwelle oder bei 0."""
+    if total == 0 or total >= settings.FREE_DELIVERY_THRESHOLD:
+        return Decimal("0.00")
+    return settings.STANDARD_DELIVERY_COST
+
+
 class Bag:
     """Warenkorb eines Besuchers, gespeichert in seiner Session.
 
@@ -43,6 +50,11 @@ class Bag:
         self.items.pop(str(product.id), None)
         self._save()
 
+    def clear(self):
+        """Warenkorb komplett leeren."""
+        self.items = {}
+        self._save()
+
     def get_items(self):
         """Liste der Positionen mit Produkt, Menge und Zwischensumme."""
         products = Product.objects.filter(id__in=self.items.keys(), is_active=True)
@@ -61,10 +73,7 @@ class Bag:
         total = sum((item["subtotal"] for item in items), Decimal("0.00"))
         count = sum(item["quantity"] for item in items)
 
-        if total == 0 or total >= settings.FREE_DELIVERY_THRESHOLD:
-            delivery = Decimal("0.00")
-        else:
-            delivery = settings.STANDARD_DELIVERY_COST
+        delivery = calculate_delivery(total)
 
         return {
             "bag_items": items,

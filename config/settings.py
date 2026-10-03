@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     # Fremd-Apps
     "allauth",
     "allauth.account",
+    "django_countries",
     # Eigene Apps
     "home",
     "products",
     "bag",
+    "checkout",
 ]
 
 MIDDLEWARE = [
