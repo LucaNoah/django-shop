@@ -51,3 +51,22 @@ class Product(models.Model):
     def get_absolute_url(self):
         """Adresse der Detailseite dieses Produkts."""
         return reverse("products:product_detail", args=[self.slug])
+
+
+class ProductImage(models.Model):
+    """Zusätzliches Bild für die Galerie eines Produkts."""
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to="products/gallery/")
+    alt_text = models.CharField(max_length=200, blank=True)
+    position = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["position", "id"]
+
+    def __str__(self):
+        return f"Bild {self.position} von {self.product}"

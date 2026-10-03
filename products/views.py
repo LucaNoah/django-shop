@@ -47,6 +47,10 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    """Ein einzelnes Produkt, gefunden über seinen Slug."""
-    product = get_object_or_404(Product, slug=slug, is_active=True)
+    """Ein einzelnes Produkt mit Galerie, gefunden über seinen Slug."""
+    product = get_object_or_404(
+        Product.objects.prefetch_related("images"),
+        slug=slug,
+        is_active=True,
+    )
     return render(request, "products/product_detail.html", {"product": product})

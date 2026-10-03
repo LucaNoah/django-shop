@@ -11,6 +11,14 @@
 <img src="{{ product.image.url }}" alt="{{ product.name }}" width="400">
 {% endif %}
 
+{% if product.images.all %}
+<div>
+    {% for picture in product.images.all %}
+    <img src="{{ picture.image.url }}" alt="{{ picture.alt_text|default:product.name }}" width="150">
+    {% endfor %}
+</div>
+{% endif %}
+
 <p>Kategorie: {{ product.category|default:"–" }}</p>
 <p><strong>CHF {{ product.price }}</strong></p>
 
