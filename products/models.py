@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -42,7 +43,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    @property  # NEU
+    @property
     def is_in_stock(self):
         """True, wenn mindestens ein Stück auf Lager ist."""
         return self.stock > 0
+
+    def get_absolute_url(self):
+        """Adresse der Detailseite dieses Produkts."""
+        return reverse("products:product_detail", args=[self.slug])

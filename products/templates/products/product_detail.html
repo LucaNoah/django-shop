@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block head_title %}{{ product.name }}{% endblock head_title %}
+
+{% block content %}
+<p><a href="{% url 'products:product_list' %}">← Alle Produkte</a></p>
+
+<h1>{{ product.name }}</h1>
+
+{% if product.image %}
+<img src="{{ product.image.url }}" alt="{{ product.name }}" width="400">
+{% endif %}
+
+<p>Kategorie: {{ product.category|default:"–" }}</p>
+<p><strong>CHF {{ product.price }}</strong></p>
+
+{% if product.is_in_stock %}
+<p>Lieferbar{% if product.stock <= 5 %} – nur noch {{ product.stock }} Stück{% endif %}</p>
+{% else %}
+<p>Ausverkauft</p>
+{% endif %}
+
+{% if product.sku %}
+<p>Artikelnummer: {{ product.sku }}</p>
+{% endif %}
+
+<div>{{ product.description|linebreaks }}</div>
+{% endblock content %}
