@@ -21,4 +21,6 @@ class OrderAdmin(admin.ModelAdmin):
         "order_total",
         "delivery_cost",
         "grand_total",
+        "stripe_session_id",
+        "paid_at",
     ]

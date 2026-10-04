@@ -159,3 +159,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Warenkorb und Versand
 FREE_DELIVERY_THRESHOLD = Decimal("50.00")
 STANDARD_DELIVERY_COST = Decimal("7.00")
+
+# Stripe
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_CURRENCY = "chf"

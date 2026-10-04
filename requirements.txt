@@ -4,3 +4,4 @@ dj-database-url>=3.0,<4
 django-allauth>=65.19,<66
 Pillow>=11.0
 django-countries>=7.6
+stripe>=12.0
