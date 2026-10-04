@@ -4,6 +4,11 @@
 
 {% block content %}
 <h1>Danke für deine Bestellung!</h1>
+
+{% if order.status == "pending" %}
+<p class="message message-info">Deine Zahlung wird gerade bestätigt. Das dauert meist nur wenige Sekunden.</p>
+{% endif %}
+
 <p>Bestellnummer: <strong>{{ order.order_number }}</strong></p>
 <p>Datum: {{ order.created_at|date:"d.m.Y H:i" }}</p>
 <p>Status: {{ order.get_status_display }}</p>

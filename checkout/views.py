@@ -1,7 +1,10 @@
+import stripe
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from bag.bag import Bag
 from profiles.models import UserProfile
@@ -9,9 +12,57 @@ from profiles.models import UserProfile
 from .forms import OrderForm
 from .models import Order, OrderLineItem
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def to_rappen(amount):
+    """Stripe rechnet in der kleinsten Einheit: CHF 12.50 -> 1250."""
+    return int(amount * 100)
+
+
+def create_stripe_session(request, order):
+    """Zahlungsseite bei Stripe für diese Bestellung anlegen."""
+    line_items = [
+        {
+            "price_data": {
+                "currency": settings.STRIPE_CURRENCY,
+                "product_data": {"name": item.product_name},
+                "unit_amount": to_rappen(item.unit_price),
+            },
+            "quantity": item.quantity,
+        }
+        for item in order.lineitems.all()
+    ]
+    if order.delivery_cost > 0:
+        line_items.append(
+            {
+                "price_data": {
+                    "currency": settings.STRIPE_CURRENCY,
+                    "product_data": {"name": "Versand"},
+                    "unit_amount": to_rappen(order.delivery_cost),
+                },
+                "quantity": 1,
+            }
+        )
+
+    success_url = request.build_absolute_uri(
+        reverse("checkout:success", args=[order.order_number])
+    )
+    cancel_url = request.build_absolute_uri(reverse("bag:detail"))
+
+    return stripe.checkout.Session.create(
+        mode="payment",
+        line_items=line_items,
+        customer_email=order.email,
+        client_reference_id=order.order_number,
+        metadata={"order_number": order.order_number},
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )
+
 
 def checkout(request):
-    """Bestellformular anzeigen und Bestellung anlegen."""
+    """Bestellformular anzeigen, Bestellung anlegen und zu Stripe weiterleiten."""
     bag = Bag(request)
     items = bag.get_items()
     if not items:
@@ -48,8 +99,6 @@ def checkout(request):
                     )
                 order.update_total()
 
-            bag.clear()
-
             # Adresse im Profil speichern, wenn das Häkchen gesetzt ist
             if request.user.is_authenticated and request.POST.get("save_info"):
                 profile, _ = UserProfile.objects.get_or_create(user=request.user)
@@ -61,8 +110,21 @@ def checkout(request):
                 profile.default_country = order.country
                 profile.save()
 
+            # Zahlungsseite bei Stripe anlegen und dorthin weiterleiten
+            try:
+                session = create_stripe_session(request, order)
+            except stripe.StripeError:
+                messages.error(
+                    request,
+                    "Die Zahlung konnte gerade nicht gestartet werden. "
+                    "Bitte versuche es später noch einmal.",
+                )
+                return redirect("checkout:checkout")
+
+            order.stripe_session_id = session.id
+            order.save(update_fields=["stripe_session_id"])
             request.session["last_order_number"] = order.order_number
-            return redirect("checkout:success", order_number=order.order_number)
+            return redirect(session.url, permanent=False)
     else:
         # Formular mit der gespeicherten Adresse vorausfüllen
         initial = {}
@@ -85,7 +147,13 @@ def checkout(request):
 def checkout_success(request, order_number):
     """Bestätigungsseite, nur für den Besteller sichtbar."""
     order = get_object_or_404(Order, order_number=order_number)
+    from_this_session = request.session.get("last_order_number") == order_number
     is_owner = request.user.is_authenticated and order.user == request.user
-    if not is_owner and request.session.get("last_order_number") != order_number:
+    if not is_owner and not from_this_session:
         raise Http404
+
+    # Zurück von Stripe: jetzt erst den Warenkorb leeren
+    if from_this_session:
+        Bag(request).clear()
+
     return render(request, "checkout/checkout_success.html", {"order": order})
