@@ -1,0 +1,25 @@
+{% autoescape off %}Hallo {{ order.full_name }}
+
+Vielen Dank für deine Bestellung! Wir haben deine Zahlung erhalten.
+
+Bestellnummer: {{ order.order_number }}
+Datum: {{ order.created_at|date:"d.m.Y H:i" }}
+
+Artikel:
+{% for item in order.lineitems.all %}- {{ item.quantity }} × {{ item.product_name }} à CHF {{ item.unit_price }} = CHF {{ item.lineitem_total }}
+{% endfor %}
+Warenwert: CHF {{ order.order_total }}
+Versand: CHF {{ order.delivery_cost }}
+Total: CHF {{ order.grand_total }}
+
+Lieferadresse:
+{{ order.full_name }}
+{{ order.street_address }}
+{{ order.postcode }} {{ order.town_or_city }}
+{{ order.country.name }}
+
+Bei Fragen antworte einfach auf diese E-Mail.
+
+Freundliche Grüsse
+Dein Shop-Team
+{% endautoescape %}

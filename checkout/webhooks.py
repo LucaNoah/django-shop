@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 
 from products.models import Product
 
+from .emails import send_order_confirmation
 from .models import Order
 
 
@@ -40,7 +41,7 @@ def stripe_webhook(request):
 
 
 def mark_order_paid(order_number):
-    """Bestellung auf bezahlt setzen und Lager reduzieren, nur einmal."""
+    """Bestellung auf bezahlt setzen, Lager reduzieren, Mail schicken – nur einmal."""
     with transaction.atomic():
         order = (
             Order.objects.select_for_update().filter(order_number=order_number).first()
@@ -56,3 +57,6 @@ def mark_order_paid(order_number):
         order.status = Order.Status.PAID
         order.paid_at = timezone.now()
         order.save(update_fields=["status", "paid_at"])
+
+        # Mail erst schicken, wenn alles sicher gespeichert ist
+        transaction.on_commit(lambda: send_order_confirmation(order))
