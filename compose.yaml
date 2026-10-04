@@ -25,5 +25,13 @@ services:
       db:
         condition: service_healthy
 
+  stripe:
+    image: stripe/stripe-cli:latest
+    command: listen --events checkout.session.completed --forward-to web:8000/checkout/webhook/
+    environment:
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY}
+    depends_on:
+      - web
+
 volumes:
   postgres_data:
