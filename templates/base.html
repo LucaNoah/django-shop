@@ -1,30 +1,44 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ CURRENT_LANGUAGE }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block head_title %}Shop{% endblock head_title %}</title>
+    <title>{% block head_title %}{% translate "Shop" %}{% endblock head_title %}</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_head %}{% endblock extra_head %}
 </head>
 <body>
     {% block body %}
     <header class="site-header">
-        <nav class="site-nav" aria-label="Hauptnavigation">
-            <a href="{% url 'home' %}">Startseite</a>
-            <a href="{% url 'products:product_list' %}">Produkte</a>
-            <a href="{% url 'bag:detail' %}">Warenkorb ({{ bag_count }})</a>
+        <nav class="site-nav" aria-label="{% translate 'Main navigation' %}">
+            <a href="{% url 'home' %}">{% translate "Home" %}</a>
+            <a href="{% url 'products:product_list' %}">{% translate "Products" %}</a>
+            <a href="{% url 'bag:detail' %}">{% blocktranslate with count=bag_count %}Shopping bag ({{ count }}){% endblocktranslate %}</a>
             <span class="site-nav__user">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'profiles:profile' %}">Mein Konto</a>
+                    <a href="{% url 'profiles:profile' %}">{% translate "My account" %}</a>
                     ({{ user.email|default:user.username }})
-                    · <a href="{% url 'account_logout' %}">Abmelden</a>
+                    · <a href="{% url 'account_logout' %}">{% translate "Log out" %}</a>
                 {% else %}
-                    <a href="{% url 'account_login' %}">Anmelden</a>
-                    · <a href="{% url 'account_signup' %}">Registrieren</a>
+                    <a href="{% url 'account_login' %}">{% translate "Log in" %}</a>
+                    · <a href="{% url 'account_signup' %}">{% translate "Sign up" %}</a>
                 {% endif %}
             </span>
+            <form action="{% url 'set_language' %}" method="post" class="site-nav__language">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                {% get_available_languages as AVAILABLE_LANGUAGES %}
+                {% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+                {% for language in languages %}
+                <button type="submit" name="language" value="{{ language.code }}"
+                        title="{{ language.name_local }}"
+                        {% if language.code == CURRENT_LANGUAGE %}aria-current="true"{% endif %}>
+                    {{ language.code|upper }}
+                </button>
+                {% endfor %}
+            </form>
         </nav>
     </header>
 
@@ -41,7 +55,7 @@
     </main>
 
     <footer class="site-footer">
-        Arbeitsversion – das Design folgt.
+        {% translate "Working version – the design will follow." %}
     </footer>
     {% endblock body %}
     {% block extra_body %}{% endblock extra_body %}

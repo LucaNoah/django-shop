@@ -1,29 +1,30 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block head_title %}Danke für deine Bestellung{% endblock head_title %}
+{% block head_title %}{% translate "Thank you for your order" %}{% endblock head_title %}
 
 {% block content %}
-<h1>Danke für deine Bestellung!</h1>
+<h1>{% translate "Thank you for your order!" %}</h1>
 
 {% if order.status == "pending" %}
-<p class="message message-info">Deine Zahlung wird gerade bestätigt. Das dauert meist nur wenige Sekunden.</p>
+<p class="message message-info">{% translate "Your payment is being confirmed. This usually takes only a few seconds." %}</p>
 {% endif %}
 
-<p>Bestellnummer: <strong>{{ order.order_number }}</strong></p>
-<p>Datum: {{ order.created_at|date:"d.m.Y H:i" }}</p>
-<p>Status: {{ order.get_status_display }}</p>
+<p>{% translate "Order number:" %} <strong>{{ order.order_number }}</strong></p>
+<p>{% translate "Date:" %} {{ order.created_at|date:"d.m.Y H:i" }}</p>
+<p>{% translate "Status:" %} {{ order.get_status_display }}</p>
 
-<h2>Artikel</h2>
+<h2>{% translate "Items" %}</h2>
 <ul>
     {% for item in order.lineitems.all %}
-    <li>{{ item.quantity }} × {{ item.product_name }} à CHF {{ item.unit_price }} = CHF {{ item.lineitem_total }}</li>
+    <li>{{ item.quantity }} × {{ item.product_name }} (CHF {{ item.unit_price }}) = CHF {{ item.lineitem_total }}</li>
     {% endfor %}
 </ul>
-<p>Warenwert: CHF {{ order.order_total }}</p>
-<p>Versand: CHF {{ order.delivery_cost }}</p>
-<p><strong>Total: CHF {{ order.grand_total }}</strong></p>
+<p>{% translate "Items total:" %} CHF {{ order.order_total }}</p>
+<p>{% translate "Delivery:" %} CHF {{ order.delivery_cost }}</p>
+<p><strong>{% translate "Total:" %} CHF {{ order.grand_total }}</strong></p>
 
-<h2>Lieferadresse</h2>
+<h2>{% translate "Delivery address" %}</h2>
 <p>
     {{ order.full_name }}<br>
     {{ order.street_address }}<br>
@@ -31,5 +32,5 @@
     {{ order.country.name }}
 </p>
 
-<p><a href="{% url 'products:product_list' %}">Weiter einkaufen</a></p>
+<p><a href="{% url 'products:product_list' %}">{% translate "Continue shopping" %}</a></p>
 {% endblock content %}

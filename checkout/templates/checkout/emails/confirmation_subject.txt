@@ -1,1 +1,1 @@
-Bestellbestätigung {{ order.order_number }}
+{% load i18n %}{% blocktranslate with number=order.order_number %}Order confirmation {{ number }}{% endblocktranslate %}

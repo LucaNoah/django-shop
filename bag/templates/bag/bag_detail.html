@@ -1,18 +1,19 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block head_title %}Warenkorb{% endblock head_title %}
+{% block head_title %}{% translate "Shopping bag" %}{% endblock head_title %}
 
 {% block content %}
-<h1>Warenkorb</h1>
+<h1>{% translate "Shopping bag" %}</h1>
 
 {% if bag_items %}
 <table>
     <thead>
         <tr>
-            <th>Produkt</th>
-            <th>Preis</th>
-            <th>Menge</th>
-            <th>Zwischensumme</th>
+            <th>{% translate "Product" %}</th>
+            <th>{% translate "Price" %}</th>
+            <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Subtotal" %}</th>
             <th></th>
         </tr>
     </thead>
@@ -24,15 +25,15 @@
             <td>
                 <form method="post" action="{% url 'bag:update' item.product.id %}">
                     {% csrf_token %}
-                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" aria-label="Menge">
-                    <button type="submit">Ändern</button>
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" aria-label="{% translate 'Quantity' %}">
+                    <button type="submit">{% translate "Update" %}</button>
                 </form>
             </td>
             <td>CHF {{ item.subtotal }}</td>
             <td>
                 <form method="post" action="{% url 'bag:remove' item.product.id %}">
                     {% csrf_token %}
-                    <button type="submit">Entfernen</button>
+                    <button type="submit">{% translate "Remove" %}</button>
                 </form>
             </td>
         </tr>
@@ -40,15 +41,16 @@
     </tbody>
 </table>
 
-<p>Warenwert: CHF {{ bag_total }}</p>
-<p>Versand: {% if delivery %}CHF {{ delivery }}{% else %}gratis{% endif %}</p>
+<p>{% translate "Items total:" %} CHF {{ bag_total }}</p>
+<p>{% translate "Delivery:" %} {% if delivery %}CHF {{ delivery }}{% else %}{% translate "free" %}{% endif %}</p>
 {% if delivery %}
-<p>Noch CHF {{ free_delivery_missing }} bis zum Gratisversand (ab CHF {{ free_delivery_threshold }}).</p>
+<p>{% blocktranslate with missing=free_delivery_missing threshold=free_delivery_threshold %}Only CHF {{ missing }} left until free delivery (from CHF {{ threshold }}).{% endblocktranslate %}</p>
 {% endif %}
-<p><strong>Total: CHF {{ grand_total }}</strong></p>
-<p><a href="{% url 'checkout:checkout' %}">Zur Kasse</a></p>
+<p><strong>{% translate "Total:" %} CHF {{ grand_total }}</strong></p>
+
+<p><a href="{% url 'checkout:checkout' %}">{% translate "Proceed to checkout" %}</a></p>
 {% else %}
-<p>Dein Warenkorb ist leer.</p>
-<p><a href="{% url 'products:product_list' %}">Zu den Produkten</a></p>
+<p>{% translate "Your shopping bag is empty." %}</p>
+<p><a href="{% url 'products:product_list' %}">{% translate "Go to products" %}</a></p>
 {% endif %}
 {% endblock content %}

@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block head_title %}{{ product.name }}{% endblock head_title %}
 
 {% block content %}
-<p><a href="{% url 'products:product_list' %}">← Alle Produkte</a></p>
+<p><a href="{% url 'products:product_list' %}">← {% translate "All products" %}</a></p>
 
 <h1>{{ product.name }}</h1>
 
@@ -19,26 +20,23 @@
 </div>
 {% endif %}
 
-<p>Kategorie: {{ product.category|default:"–" }}</p>
+<p>{% translate "Category:" %} {{ product.category|default:"–" }}</p>
 <p><strong>CHF {{ product.price }}</strong></p>
 
 {% if product.is_in_stock %}
-<p>Lieferbar{% if product.stock <= 5 %} – nur noch {{ product.stock }} Stück{% endif %}</p>
-{% else %}
-<p>Ausverkauft</p>
-{% endif %}
-
-{% if product.is_in_stock %}
+<p>{% translate "In stock" %}{% if product.stock <= 5 %} – {% blocktranslate with stock=product.stock %}only {{ stock }} left{% endblocktranslate %}{% endif %}</p>
 <form method="post" action="{% url 'bag:add' product.id %}">
     {% csrf_token %}
-    <label for="quantity">Menge</label>
+    <label for="quantity">{% translate "Quantity" %}</label>
     <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
-    <button type="submit">In den Warenkorb</button>
+    <button type="submit">{% translate "Add to bag" %}</button>
 </form>
+{% else %}
+<p>{% translate "Sold out" %}</p>
 {% endif %}
 
 {% if product.sku %}
-<p>Artikelnummer: {{ product.sku }}</p>
+<p>{% translate "Item number:" %} {{ product.sku }}</p>
 {% endif %}
 
 <div>{{ product.description|linebreaks }}</div>

@@ -1,33 +1,35 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block head_title %}Produkte{% endblock head_title %}
+{% block head_title %}{% translate "Products" %}{% endblock head_title %}
 
 {% block content %}
-<h1>Produkte</h1>
-<form method="get" class="filter-form" action="{% url 'products:product_list' %}">
-    <input type="search" name="q" value="{{ query }}" placeholder="Produkte suchen">
+<h1>{% translate "Products" %}</h1>
+
+<form method="get" action="{% url 'products:product_list' %}" class="filter-form">
+    <input type="search" name="q" value="{{ query }}" placeholder="{% translate 'Search products' %}">
 
     <select name="category">
-        <option value="">Alle Kategorien</option>
+        <option value="">{% translate "All categories" %}</option>
         {% for category in categories %}
         <option value="{{ category.name }}" {% if category.name == current_category %}selected{% endif %}>{{ category }}</option>
         {% endfor %}
     </select>
 
     <select name="sort">
-        <option value="name" {% if current_sort == "name" %}selected{% endif %}>Name A–Z</option>
-        <option value="-name" {% if current_sort == "-name" %}selected{% endif %}>Name Z–A</option>
-        <option value="price" {% if current_sort == "price" %}selected{% endif %}>Preis aufsteigend</option>
-        <option value="-price" {% if current_sort == "-price" %}selected{% endif %}>Preis absteigend</option>
-        <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>Neueste zuerst</option>
+        <option value="name" {% if current_sort == "name" %}selected{% endif %}>{% translate "Name A–Z" %}</option>
+        <option value="-name" {% if current_sort == "-name" %}selected{% endif %}>{% translate "Name Z–A" %}</option>
+        <option value="price" {% if current_sort == "price" %}selected{% endif %}>{% translate "Price: low to high" %}</option>
+        <option value="-price" {% if current_sort == "-price" %}selected{% endif %}>{% translate "Price: high to low" %}</option>
+        <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>{% translate "Newest first" %}</option>
     </select>
 
-    <button type="submit">Anzeigen</button>
+    <button type="submit">{% translate "Show" %}</button>
 </form>
 
 <p>
-    {{ products|length }} Produkt{{ products|length|pluralize:"e" }}
-    {% if query %}für „{{ query }}“{% endif %}
+    {% blocktranslate count counter=products|length %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktranslate %}
+    {% if query %}{% blocktranslate %}for “{{ query }}”{% endblocktranslate %}{% endif %}
 </p>
 
 <div class="product-grid">
@@ -39,10 +41,10 @@
     {% endif %}
     <p>{{ product.category|default:"" }}</p>
     <p>CHF {{ product.price }}</p>
-    <p>{% if product.is_in_stock %}Lieferbar{% else %}Ausverkauft{% endif %}</p>
+    <p>{% if product.is_in_stock %}{% translate "In stock" %}{% else %}{% translate "Sold out" %}{% endif %}</p>
 </article>
 {% empty %}
-<p>Noch keine Produkte vorhanden.</p>
+<p>{% translate "No products yet." %}</p>
 {% endfor %}
 </div>
 {% endblock content %}

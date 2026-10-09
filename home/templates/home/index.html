@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block head_title %}Startseite{% endblock head_title %}
+{% block head_title %}{% translate "Home" %}{% endblock head_title %}
 
 {% block content %}
-<h1>Willkommen im Shop</h1>
-<p>Hier entstehen bald die Produkte.</p>
+<h1>{% translate "Welcome to the shop" %}</h1>
+<p>{% translate "Our products will appear here soon." %}</p>
 {% endblock content %}

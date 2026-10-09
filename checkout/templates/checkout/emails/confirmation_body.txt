@@ -1,25 +1,25 @@
-{% autoescape off %}Hallo {{ order.full_name }}
+{% load i18n %}{% autoescape off %}{% blocktranslate with name=order.full_name %}Hello {{ name }}{% endblocktranslate %}
 
-Vielen Dank für deine Bestellung! Wir haben deine Zahlung erhalten.
+{% translate "Thank you for your order! We have received your payment." %}
 
-Bestellnummer: {{ order.order_number }}
-Datum: {{ order.created_at|date:"d.m.Y H:i" }}
+{% translate "Order number:" %} {{ order.order_number }}
+{% translate "Date:" %} {{ order.created_at|date:"d.m.Y H:i" }}
 
-Artikel:
-{% for item in order.lineitems.all %}- {{ item.quantity }} × {{ item.product_name }} à CHF {{ item.unit_price }} = CHF {{ item.lineitem_total }}
+{% translate "Items:" %}
+{% for item in order.lineitems.all %}- {{ item.quantity }} × {{ item.product_name }} (CHF {{ item.unit_price }}) = CHF {{ item.lineitem_total }}
 {% endfor %}
-Warenwert: CHF {{ order.order_total }}
-Versand: CHF {{ order.delivery_cost }}
-Total: CHF {{ order.grand_total }}
+{% translate "Items total:" %} CHF {{ order.order_total }}
+{% translate "Delivery:" %} CHF {{ order.delivery_cost }}
+{% translate "Total:" %} CHF {{ order.grand_total }}
 
-Lieferadresse:
+{% translate "Delivery address:" %}
 {{ order.full_name }}
 {{ order.street_address }}
 {{ order.postcode }} {{ order.town_or_city }}
 {{ order.country.name }}
 
-Bei Fragen antworte einfach auf diese E-Mail.
+{% translate "If you have any questions, simply reply to this email." %}
 
-Freundliche Grüsse
-Dein Shop-Team
+{% translate "Kind regards" %}
+{% translate "Your shop team" %}
 {% endautoescape %}
