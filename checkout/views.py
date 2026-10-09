@@ -5,6 +5,8 @@ from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.translation import get_language
+from django.utils.translation import gettext as _
 
 from bag.bag import Bag
 from profiles.models import UserProfile
@@ -38,7 +40,7 @@ def create_stripe_session(request, order):
             {
                 "price_data": {
                     "currency": settings.STRIPE_CURRENCY,
-                    "product_data": {"name": "Versand"},
+                    "product_data": {"name": _("Delivery")},
                     "unit_amount": to_rappen(order.delivery_cost),
                 },
                 "quantity": 1,
@@ -58,6 +60,7 @@ def create_stripe_session(request, order):
         metadata={"order_number": order.order_number},
         success_url=success_url,
         cancel_url=cancel_url,
+        locale=get_language() or "auto",
     )
 
 
@@ -66,7 +69,7 @@ def checkout(request):
     bag = Bag(request)
     items = bag.get_items()
     if not items:
-        messages.info(request, "Dein Warenkorb ist leer.")
+        messages.info(request, _("Your shopping bag is empty."))
         return redirect("products:product_list")
 
     if request.method == "POST":
@@ -78,8 +81,11 @@ def checkout(request):
                 if item["quantity"] > product.stock:
                     messages.error(
                         request,
-                        f"Von {product.name} sind nur noch {product.stock} Stück "
-                        f"verfügbar. Bitte passe deinen Warenkorb an.",
+                        _(
+                            "Only %(stock)s of %(name)s are available. "
+                            "Please adjust your shopping bag."
+                        )
+                        % {"stock": product.stock, "name": product.name},
                     )
                     return redirect("bag:detail")
 
@@ -101,7 +107,7 @@ def checkout(request):
 
             # Adresse im Profil speichern, wenn das Häkchen gesetzt ist
             if request.user.is_authenticated and request.POST.get("save_info"):
-                profile, _ = UserProfile.objects.get_or_create(user=request.user)
+                profile, _created = UserProfile.objects.get_or_create(user=request.user)
                 profile.default_full_name = order.full_name
                 profile.default_phone_number = order.phone_number
                 profile.default_street_address = order.street_address
@@ -116,8 +122,10 @@ def checkout(request):
             except stripe.StripeError:
                 messages.error(
                     request,
-                    "Die Zahlung konnte gerade nicht gestartet werden. "
-                    "Bitte versuche es später noch einmal.",
+                    _(
+                        "The payment could not be started right now. "
+                        "Please try again later."
+                    ),
                 )
                 return redirect("checkout:checkout")
 
@@ -129,7 +137,7 @@ def checkout(request):
         # Formular mit der gespeicherten Adresse vorausfüllen
         initial = {}
         if request.user.is_authenticated:
-            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            profile, _created = UserProfile.objects.get_or_create(user=request.user)
             initial = {
                 "full_name": profile.default_full_name,
                 "email": request.user.email,

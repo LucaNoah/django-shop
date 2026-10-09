@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from .models import Order
 
@@ -18,11 +19,11 @@ class OrderForm(forms.ModelForm):
             "country",
         ]
         labels = {
-            "full_name": "Vor- und Nachname",
-            "email": "E-Mail",
-            "phone_number": "Telefon (optional)",
-            "street_address": "Strasse und Hausnummer",
-            "postcode": "PLZ",
-            "town_or_city": "Ort",
-            "country": "Land",
+            "full_name": _("First and last name"),
+            "email": _("Email"),
+            "phone_number": _("Phone (optional)"),
+            "street_address": _("Street and house number"),
+            "postcode": _("Postcode"),
+            "town_or_city": _("Town or city"),
+            "country": _("Country"),
         }

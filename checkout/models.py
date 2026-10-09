@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from bag.bag import calculate_delivery
@@ -13,10 +14,10 @@ class Order(models.Model):
     """Eine Bestellung mit Lieferadresse und Beträgen."""
 
     class Status(models.TextChoices):
-        PENDING = "pending", "Offen"
-        PAID = "paid", "Bezahlt"
-        SHIPPED = "shipped", "Versendet"
-        CANCELLED = "cancelled", "Storniert"
+        PENDING = "pending", _("Pending")
+        PAID = "paid", _("Paid")
+        SHIPPED = "shipped", _("Shipped")
+        CANCELLED = "cancelled", _("Cancelled")
 
     order_number = models.CharField(max_length=32, unique=True, editable=False)
     user = models.ForeignKey(
