@@ -1,0 +1,471 @@
+# Deutsche Übersetzung für django-shop
+msgid ""
+msgstr ""
+"Project-Id-Version: django-shop\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-10 00:19+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# --- Warenkorb ---
+#: bag/templates/bag/bag_detail.html:4 bag/templates/bag/bag_detail.html:7
+msgid "Shopping bag"
+msgstr "Warenkorb"
+
+#: bag/templates/bag/bag_detail.html:13
+msgid "Product"
+msgstr "Produkt"
+
+#: bag/templates/bag/bag_detail.html:14
+msgid "Price"
+msgstr "Preis"
+
+#: bag/templates/bag/bag_detail.html:15 bag/templates/bag/bag_detail.html:28
+#: products/templates/products/product_detail.html:30
+msgid "Quantity"
+msgstr "Menge"
+
+#: bag/templates/bag/bag_detail.html:16
+msgid "Subtotal"
+msgstr "Zwischensumme"
+
+#: bag/templates/bag/bag_detail.html:29
+msgid "Update"
+msgstr "Ändern"
+
+#: bag/templates/bag/bag_detail.html:36
+msgid "Remove"
+msgstr "Entfernen"
+
+#: bag/templates/bag/bag_detail.html:44
+#: checkout/templates/checkout/checkout.html:15
+#: checkout/templates/checkout/checkout_success.html:23
+#: checkout/templates/checkout/emails/confirmation_body.txt:11
+msgid "Items total:"
+msgstr "Warenwert:"
+
+#: bag/templates/bag/bag_detail.html:45
+#: checkout/templates/checkout/checkout.html:16
+#: checkout/templates/checkout/checkout_success.html:24
+#: checkout/templates/checkout/emails/confirmation_body.txt:12
+msgid "Delivery:"
+msgstr "Versand:"
+
+#: bag/templates/bag/bag_detail.html:45
+#: checkout/templates/checkout/checkout.html:16
+msgid "free"
+msgstr "gratis"
+
+#: bag/templates/bag/bag_detail.html:47
+#, python-format
+msgid "Only CHF %(missing)s left until free delivery (from CHF %(threshold)s)."
+msgstr "Noch CHF %(missing)s bis zum Gratisversand (ab CHF %(threshold)s)."
+
+#: bag/templates/bag/bag_detail.html:49
+#: checkout/templates/checkout/checkout.html:17
+#: checkout/templates/checkout/checkout_success.html:25
+#: checkout/templates/checkout/emails/confirmation_body.txt:13
+msgid "Total:"
+msgstr "Total:"
+
+#: bag/templates/bag/bag_detail.html:51
+msgid "Proceed to checkout"
+msgstr "Zur Kasse"
+
+#: bag/templates/bag/bag_detail.html:53 checkout/views.py:72
+msgid "Your shopping bag is empty."
+msgstr "Dein Warenkorb ist leer."
+
+#: bag/templates/bag/bag_detail.html:54
+msgid "Go to products"
+msgstr "Zu den Produkten"
+
+#: bag/views.py:31
+#, python-format
+msgid "%(name)s is unfortunately sold out."
+msgstr "%(name)s ist leider ausverkauft."
+
+#: bag/views.py:43
+#, python-format
+msgid "Only %(stock)s in stock. In your shopping bag: %(quantity)s."
+msgstr "Nur %(stock)s Stück auf Lager. Im Warenkorb: %(quantity)s."
+
+#: bag/views.py:49
+#, python-format
+msgid "%(name)s in your shopping bag: %(quantity)s."
+msgstr "%(name)s im Warenkorb: %(quantity)s Stück."
+
+#: bag/views.py:67 bag/views.py:91
+#, python-format
+msgid "%(name)s was removed from your shopping bag."
+msgstr "%(name)s wurde aus dem Warenkorb entfernt."
+
+#: bag/views.py:72
+#, python-format
+msgid "Only %(stock)s in stock. Quantity set to %(quantity)s."
+msgstr "Nur %(stock)s Stück auf Lager. Menge auf %(quantity)s gesetzt."
+
+#: bag/views.py:78
+#, python-format
+msgid "Quantity of %(name)s changed to %(quantity)s."
+msgstr "Menge von %(name)s auf %(quantity)s geändert."
+
+#: checkout/forms.py:22 profiles/forms.py:19
+msgid "First and last name"
+msgstr "Vor- und Nachname"
+
+#: checkout/forms.py:23
+msgid "Email"
+msgstr "E-Mail"
+
+#: checkout/forms.py:24
+msgid "Phone (optional)"
+msgstr "Telefon (optional)"
+
+#: checkout/forms.py:25 profiles/forms.py:21
+msgid "Street and house number"
+msgstr "Strasse und Hausnummer"
+
+#: checkout/forms.py:26 profiles/forms.py:22
+msgid "Postcode"
+msgstr "PLZ"
+
+#: checkout/forms.py:27 profiles/forms.py:23
+msgid "Town or city"
+msgstr "Ort"
+
+#: checkout/forms.py:28 profiles/forms.py:24
+msgid "Country"
+msgstr "Land"
+
+#: checkout/models.py:17
+msgid "Pending"
+msgstr "Offen"
+
+#: checkout/models.py:18
+msgid "Paid"
+msgstr "Bezahlt"
+
+#: checkout/models.py:19
+msgid "Shipped"
+msgstr "Versendet"
+
+#: checkout/models.py:20
+msgid "Cancelled"
+msgstr "Storniert"
+
+# --- Kasse ---
+#: checkout/templates/checkout/checkout.html:4
+#: checkout/templates/checkout/checkout.html:7
+msgid "Checkout"
+msgstr "Kasse"
+
+#: checkout/templates/checkout/checkout.html:9
+msgid "Your order"
+msgstr "Deine Bestellung"
+
+#: checkout/templates/checkout/checkout.html:19
+#: checkout/templates/checkout/checkout_success.html:27
+msgid "Delivery address"
+msgstr "Lieferadresse"
+
+#: checkout/templates/checkout/checkout.html:27
+msgid "Save this address to my account"
+msgstr "Diese Adresse in meinem Konto speichern"
+
+#: checkout/templates/checkout/checkout.html:31
+msgid "Proceed to payment"
+msgstr "Weiter zur Zahlung"
+
+#: checkout/templates/checkout/checkout.html:33
+msgid "You will be redirected to the secure Stripe payment page."
+msgstr "Du wirst zur sicheren Zahlungsseite von Stripe weitergeleitet."
+
+#: checkout/templates/checkout/checkout.html:35
+msgid "Back to shopping bag"
+msgstr "Zurück zum Warenkorb"
+
+# --- Danke-Seite und Bestellstatus ---
+#: checkout/templates/checkout/checkout_success.html:4
+msgid "Thank you for your order"
+msgstr "Danke für deine Bestellung"
+
+#: checkout/templates/checkout/checkout_success.html:7
+msgid "Thank you for your order!"
+msgstr "Danke für deine Bestellung!"
+
+#: checkout/templates/checkout/checkout_success.html:10
+msgid "Your payment is being confirmed. This usually takes only a few seconds."
+msgstr ""
+"Deine Zahlung wird gerade bestätigt. Das dauert meist nur wenige Sekunden."
+
+#: checkout/templates/checkout/checkout_success.html:13
+#: checkout/templates/checkout/emails/confirmation_body.txt:5
+msgid "Order number:"
+msgstr "Bestellnummer:"
+
+#: checkout/templates/checkout/checkout_success.html:14
+#: checkout/templates/checkout/emails/confirmation_body.txt:6
+msgid "Date:"
+msgstr "Datum:"
+
+#: checkout/templates/checkout/checkout_success.html:15
+msgid "Status:"
+msgstr "Status:"
+
+#: checkout/templates/checkout/checkout_success.html:17
+msgid "Items"
+msgstr "Artikel"
+
+#: checkout/templates/checkout/checkout_success.html:35
+msgid "Continue shopping"
+msgstr "Weiter einkaufen"
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:1
+#, python-format
+msgid "Hello %(name)s"
+msgstr "Hallo %(name)s"
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:3
+msgid "Thank you for your order! We have received your payment."
+msgstr "Vielen Dank für deine Bestellung! Wir haben deine Zahlung erhalten."
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:8
+msgid "Items:"
+msgstr "Artikel:"
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:15
+msgid "Delivery address:"
+msgstr "Lieferadresse:"
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:21
+msgid "If you have any questions, simply reply to this email."
+msgstr "Bei Fragen antworte einfach auf diese E-Mail."
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:23
+msgid "Kind regards"
+msgstr "Freundliche Grüsse"
+
+#: checkout/templates/checkout/emails/confirmation_body.txt:24
+msgid "Your shop team"
+msgstr "Dein Shop-Team"
+
+# --- Bestätigungs-E-Mail ---
+#: checkout/templates/checkout/emails/confirmation_subject.txt:1
+#, python-format
+msgid "Order confirmation %(number)s"
+msgstr "Bestellbestätigung %(number)s"
+
+#: checkout/views.py:43
+msgid "Delivery"
+msgstr "Versand"
+
+#: checkout/views.py:85
+#, python-format
+msgid ""
+"Only %(stock)s of %(name)s are available. Please adjust your shopping bag."
+msgstr ""
+"Von %(name)s sind nur noch %(stock)s Stück verfügbar. Bitte passe deinen "
+"Warenkorb an."
+
+#: checkout/views.py:126
+msgid "The payment could not be started right now. Please try again later."
+msgstr ""
+"Die Zahlung konnte gerade nicht gestartet werden. Bitte versuche es später "
+"noch einmal."
+
+# --- Einstellungen ---
+#: config/settings.py:129
+msgid "German"
+msgstr "Deutsch"
+
+#: config/settings.py:130
+msgid "English"
+msgstr "Englisch"
+
+#: home/templates/home/index.html:4 templates/base.html:16
+msgid "Home"
+msgstr "Startseite"
+
+# --- Startseite ---
+#: home/templates/home/index.html:7
+msgid "Welcome to the shop"
+msgstr "Willkommen im Shop"
+
+#: home/templates/home/index.html:8
+msgid "Our products will appear here soon."
+msgstr "Hier entstehen bald die Produkte."
+
+# --- Produktdetail ---
+#: products/templates/products/product_detail.html:7
+msgid "All products"
+msgstr "Alle Produkte"
+
+#: products/templates/products/product_detail.html:23
+msgid "Category:"
+msgstr "Kategorie:"
+
+#: products/templates/products/product_detail.html:27
+#: products/templates/products/product_list.html:44
+msgid "In stock"
+msgstr "Lieferbar"
+
+#: products/templates/products/product_detail.html:27
+#, python-format
+msgid "only %(stock)s left"
+msgstr "nur noch %(stock)s Stück"
+
+#: products/templates/products/product_detail.html:32
+msgid "Add to bag"
+msgstr "In den Warenkorb"
+
+#: products/templates/products/product_detail.html:35
+#: products/templates/products/product_list.html:44
+msgid "Sold out"
+msgstr "Ausverkauft"
+
+#: products/templates/products/product_detail.html:39
+msgid "Item number:"
+msgstr "Artikelnummer:"
+
+#: products/templates/products/product_list.html:4
+#: products/templates/products/product_list.html:7 templates/base.html:17
+msgid "Products"
+msgstr "Produkte"
+
+# --- Produktliste ---
+#: products/templates/products/product_list.html:10
+msgid "Search products"
+msgstr "Produkte suchen"
+
+#: products/templates/products/product_list.html:13
+msgid "All categories"
+msgstr "Alle Kategorien"
+
+#: products/templates/products/product_list.html:20
+msgid "Name A–Z"
+msgstr "Name A–Z"
+
+#: products/templates/products/product_list.html:21
+msgid "Name Z–A"
+msgstr "Name Z–A"
+
+#: products/templates/products/product_list.html:22
+msgid "Price: low to high"
+msgstr "Preis aufsteigend"
+
+#: products/templates/products/product_list.html:23
+msgid "Price: high to low"
+msgstr "Preis absteigend"
+
+#: products/templates/products/product_list.html:24
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: products/templates/products/product_list.html:27
+msgid "Show"
+msgstr "Anzeigen"
+
+#: products/templates/products/product_list.html:31
+#, python-format
+msgid "%(counter)s product"
+msgid_plural "%(counter)s products"
+msgstr[0] "%(counter)s Produkt"
+msgstr[1] "%(counter)s Produkte"
+
+#: products/templates/products/product_list.html:32
+#, python-format
+msgid "for “%(query)s”"
+msgstr "für „%(query)s“"
+
+#: products/templates/products/product_list.html:47
+msgid "No products yet."
+msgstr "Noch keine Produkte vorhanden."
+
+#: profiles/forms.py:20
+msgid "Phone"
+msgstr "Telefon"
+
+#: profiles/templates/profiles/profile.html:4
+#: profiles/templates/profiles/profile.html:7 templates/base.html:21
+msgid "My account"
+msgstr "Mein Konto"
+
+# --- Kundenkonto ---
+#: profiles/templates/profiles/profile.html:8
+#, python-format
+msgid "Logged in as %(email)s"
+msgstr "Angemeldet als %(email)s"
+
+#: profiles/templates/profiles/profile.html:11
+msgid "Default delivery address"
+msgstr "Standard-Lieferadresse"
+
+#: profiles/templates/profiles/profile.html:15
+msgid "Save address"
+msgstr "Adresse speichern"
+
+#: profiles/templates/profiles/profile.html:20
+msgid "My orders"
+msgstr "Meine Bestellungen"
+
+#: profiles/templates/profiles/profile.html:25
+msgid "Order number"
+msgstr "Bestellnummer"
+
+#: profiles/templates/profiles/profile.html:26
+msgid "Date"
+msgstr "Datum"
+
+#: profiles/templates/profiles/profile.html:27
+msgid "Status"
+msgstr "Status"
+
+#: profiles/templates/profiles/profile.html:28
+msgid "Total"
+msgstr "Total"
+
+#: profiles/templates/profiles/profile.html:43
+msgid "You have no orders yet."
+msgstr "Du hast noch keine Bestellungen."
+
+#: profiles/views.py:18
+msgid "Your address has been saved."
+msgstr "Deine Adresse wurde gespeichert."
+
+#: profiles/views.py:20
+msgid "Please check the highlighted fields."
+msgstr "Bitte prüfe die markierten Felder."
+
+# --- Grundlayout ---
+#: templates/base.html:8
+msgid "Shop"
+msgstr "Shop"
+
+#: templates/base.html:15
+msgid "Main navigation"
+msgstr "Hauptnavigation"
+
+#: templates/base.html:18
+#, python-format
+msgid "Shopping bag (%(count)s)"
+msgstr "Warenkorb (%(count)s)"
+
+#: templates/base.html:23
+msgid "Log out"
+msgstr "Abmelden"
+
+#: templates/base.html:25
+msgid "Log in"
+msgstr "Anmelden"
+
+#: templates/base.html:26
+msgid "Sign up"
+msgstr "Registrieren"
+
+#: templates/base.html:58
+msgid "Working version – the design will follow."
+msgstr "Arbeitsversion – das Design folgt."
