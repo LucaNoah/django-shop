@@ -12,8 +12,15 @@ class OrderLineItemInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderLineItemInline]
-    list_display = ["order_number", "created_at", "full_name", "status", "grand_total"]
-    list_filter = ["status", "created_at"]
+    list_display = [
+        "order_number",
+        "created_at",
+        "full_name",
+        "status",
+        "language",
+        "grand_total",
+    ]
+    list_filter = ["status", "language", "created_at"]
     search_fields = ["order_number", "full_name", "email"]
     readonly_fields = [
         "order_number",
@@ -23,4 +30,5 @@ class OrderAdmin(admin.ModelAdmin):
         "grand_total",
         "stripe_session_id",
         "paid_at",
+        "language",
     ]

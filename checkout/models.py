@@ -46,6 +46,8 @@ class Order(models.Model):
     stripe_session_id = models.CharField(max_length=255, blank=True)
     paid_at = models.DateTimeField(null=True, blank=True)
 
+    language = models.CharField(max_length=10, default="de")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

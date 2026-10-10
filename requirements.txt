@@ -5,3 +5,4 @@ django-allauth>=65.19,<66
 Pillow>=11.0
 django-countries>=7.6
 stripe>=12.0
+django-modeltranslation>=0.19,<1

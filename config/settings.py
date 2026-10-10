@@ -35,6 +35,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 # Application definition
 
 INSTALLED_APPS = [
+    "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -131,6 +132,10 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [BASE_DIR / "locale"]
+
+# Mehrsprachige Produkttexte
+MODELTRANSLATION_DEFAULT_LANGUAGE = "de"
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("de",)
 
 TIME_ZONE = "Europe/Zurich"
 

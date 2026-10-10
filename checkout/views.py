@@ -94,6 +94,7 @@ def checkout(request):
                 order = form.save(commit=False)
                 if request.user.is_authenticated:
                     order.user = request.user
+                order.language = get_language()  # NEU: Sprache der Bestellung merken
                 order.save()
                 for item in items:
                     OrderLineItem.objects.create(
