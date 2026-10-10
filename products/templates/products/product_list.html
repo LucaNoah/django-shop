@@ -36,12 +36,20 @@
 {% for product in products %}
 <article class="product-card">
     <h2><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
-    {% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
+    {% with cover=product.cover_image %}
+    {% if cover %}
+    <img src="{{ cover.url }}" alt="{{ product.name }}" width="200">
     {% endif %}
+    {% endwith %}
     <p>{{ product.category|default:"" }}</p>
-    <p>CHF {{ product.price }}</p>
-    <p>{% if product.is_in_stock %}{% translate "In stock" %}{% else %}{% translate "Sold out" %}{% endif %}</p>
+    <p>
+        {% if product.has_price_range %}
+            {% blocktranslate with price=product.price_from %}from CHF {{ price }}{% endblocktranslate %}
+        {% else %}
+            CHF {{ product.price_from }}
+        {% endif %}
+    </p>
+    <p>{% if product.is_available %}{% translate "In stock" %}{% else %}{% translate "Sold out" %}{% endif %}</p>
 </article>
 {% empty %}
 <p>{% translate "No products yet." %}</p>

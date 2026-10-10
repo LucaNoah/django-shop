@@ -38,6 +38,7 @@ class Product(models.Model):
 
     # Personalisierung (eigener Text des Kunden, z. B. Bibelvers oder Widmung)
     personalization_enabled = models.BooleanField(default=False)
+    personalization_required = models.BooleanField(default=False)
     personalization_label = models.CharField(max_length=100, blank=True)
     personalization_help = models.CharField(max_length=200, blank=True)
 
@@ -55,8 +56,37 @@ class Product(models.Model):
 
     @property
     def is_in_stock(self):
-        """True, wenn mindestens ein Stück auf Lager ist."""
+        """Altes Lagerfeld, wird in Schritt 9.4 durch is_available ersetzt."""
         return self.stock > 0
+
+    @property
+    def active_variants(self):
+        """Alle Varianten, die im Shop angeboten werden."""
+        return [variant for variant in self.variants.all() if variant.is_active]
+
+    @property
+    def price_from(self):
+        """Tiefster aktueller Preis aller Varianten."""
+        prices = [variant.current_price for variant in self.active_variants]
+        return min(prices) if prices else None
+
+    @property
+    def has_price_range(self):
+        """True, wenn die Varianten unterschiedlich viel kosten."""
+        return len({variant.current_price for variant in self.active_variants}) > 1
+
+    @property
+    def is_available(self):
+        """True, wenn mindestens eine Variante auf Lager ist."""
+        return any(variant.is_in_stock for variant in self.active_variants)
+
+    @property
+    def cover_image(self):
+        """Bild für Listen: Hauptbild, sonst das erste Galeriebild."""
+        if self.image:
+            return self.image
+        first = next(iter(self.images.all()), None)
+        return first.image if first else None
 
 
 class ProductVariant(models.Model):

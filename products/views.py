@@ -1,4 +1,5 @@
-from django.db.models import Q
+from django.db.models import Min, Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
 from .models import Category, Product
@@ -7,15 +8,21 @@ from .models import Category, Product
 SORT_OPTIONS = {
     "name": "name",
     "-name": "-name",
-    "price": "price",
-    "-price": "-price",
+    "price": "min_price",
+    "-price": "-min_price",
     "newest": "-created_at",
 }
 
 
 def product_list(request):
-    """Aktive Produkte, optional durchsucht, gefiltert und sortiert."""
-    products = Product.objects.filter(is_active=True).select_related("category")
+    """Aktive Produkte mit mindestens einer aktiven Variante."""
+    products = (
+        Product.objects.filter(is_active=True)
+        .annotate(min_price=Min("variants__price", filter=Q(variants__is_active=True)))
+        .filter(min_price__isnull=False)
+        .select_related("category")
+        .prefetch_related("variants", "images")
+    )
     categories = Category.objects.all()
 
     # Suche in Name und Beschreibung
@@ -47,10 +54,39 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    """Ein einzelnes Produkt mit Galerie, gefunden über seinen Slug."""
+    """Ein Produkt mit wählbarer Ausführung, passenden Bildern und Personalisierung."""
     product = get_object_or_404(
-        Product.objects.prefetch_related("images"),
+        Product.objects.prefetch_related("variants", "images"),
         slug=slug,
         is_active=True,
     )
-    return render(request, "products/product_detail.html", {"product": product})
+    variants = product.active_variants
+    if not variants:
+        raise Http404
+
+    # Gewählte Ausführung aus der Adresse (?variant=12), sonst die erste lieferbare
+    selected_variant = None
+    requested = request.GET.get("variant")
+    if requested:
+        selected_variant = next((v for v in variants if str(v.id) == requested), None)
+    if selected_variant is None:
+        selected_variant = next((v for v in variants if v.is_in_stock), variants[0])
+
+    # Bilder: zuerst die der Ausführung, dann die gemeinsamen, zuletzt das Hauptbild
+    all_images = list(product.images.all())
+    pictures = [img for img in all_images if img.variant_id == selected_variant.id]
+    pictures += [img for img in all_images if img.variant_id is None]
+    gallery = [
+        {"url": img.image.url, "alt": img.alt_text or product.name} for img in pictures
+    ]
+    if product.image:
+        gallery.append({"url": product.image.url, "alt": product.name})
+
+    context = {
+        "product": product,
+        "variants": variants,
+        "selected_variant": selected_variant,
+        "show_variant_select": len(variants) > 1,
+        "gallery": gallery,
+    }
+    return render(request, "products/product_detail.html", context)

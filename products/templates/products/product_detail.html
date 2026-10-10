@@ -8,36 +8,89 @@
 
 <h1>{{ product.name }}</h1>
 
-{% if product.image %}
-<img src="{{ product.image.url }}" alt="{{ product.name }}" width="400">
-{% endif %}
-
-{% if product.images.all %}
+{% if gallery %}
+<img src="{{ gallery.0.url }}" alt="{{ gallery.0.alt }}" width="400">
+{% if gallery|length > 1 %}
 <div>
-    {% for picture in product.images.all %}
-    <img src="{{ picture.image.url }}" alt="{{ picture.alt_text|default:product.name }}" width="150">
+    {% for picture in gallery|slice:"1:" %}
+    <img src="{{ picture.url }}" alt="{{ picture.alt }}" width="150">
     {% endfor %}
 </div>
 {% endif %}
+{% endif %}
 
 <p>{% translate "Category:" %} {{ product.category|default:"–" }}</p>
-<p><strong>CHF {{ product.price }}</strong></p>
 
-{% if product.is_in_stock %}
-<p>{% translate "In stock" %}{% if product.stock <= 5 %} – {% blocktranslate with stock=product.stock %}only {{ stock }} left{% endblocktranslate %}{% endif %}</p>
+{% if show_variant_select %}
+<form method="get" class="variant-form">
+    <label for="variant">{% translate "Version" %}</label>
+    <select name="variant" id="variant" onchange="this.form.submit()">
+        {% for variant in variants %}
+        <option value="{{ variant.id }}" {% if variant == selected_variant %}selected{% endif %}>
+            {{ variant.name|default:product.name }} – CHF {{ variant.current_price }}{% if not variant.is_in_stock %} ({% translate "sold out" %}){% endif %}
+        </option>
+        {% endfor %}
+    </select>
+    <noscript><button type="submit">{% translate "Choose" %}</button></noscript>
+</form>
+{% endif %}
+
+<p>
+    {% if selected_variant.is_on_sale %}
+    <del>CHF {{ selected_variant.price }}</del>
+    <strong>CHF {{ selected_variant.sale_price }}</strong>
+    {% else %}
+    <strong>CHF {{ selected_variant.price }}</strong>
+    {% endif %}
+</p>
+
+{% if selected_variant.is_in_stock %}
+<p>{% translate "In stock" %}{% if selected_variant.stock <= 5 %} – {% blocktranslate with stock=selected_variant.stock %}only {{ stock }} left{% endblocktranslate %}{% endif %}</p>
+
 <form method="post" action="{% url 'bag:add' product.id %}">
     {% csrf_token %}
+    <input type="hidden" name="variant" value="{{ selected_variant.id }}">
+
+    {% if product.personalization_enabled %}
+    <div>
+        <label for="personalization">{{ product.personalization_label|default:_("Personalization") }}</label>
+        <textarea id="personalization" name="personalization" rows="4"
+                  maxlength="{{ selected_variant.personalization_max_length }}"
+                  data-char-counter="personalization-count"
+                  {% if product.personalization_required %}required{% endif %}></textarea>
+        <small id="personalization-count"></small>
+        {% if product.personalization_help %}
+        <p>{{ product.personalization_help }}</p>
+        {% endif %}
+        <p>{% translate "Personalized items are excluded from returns." %}</p>
+    </div>
+    {% endif %}
+
     <label for="quantity">{% translate "Quantity" %}</label>
-    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
+    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ selected_variant.stock }}">
     <button type="submit">{% translate "Add to bag" %}</button>
 </form>
 {% else %}
 <p>{% translate "Sold out" %}</p>
 {% endif %}
 
-{% if product.sku %}
-<p>{% translate "Item number:" %} {{ product.sku }}</p>
+{% if selected_variant.sku or product.sku %}
+<p>{% translate "Item number:" %} {{ selected_variant.sku|default:product.sku }}</p>
 {% endif %}
 
 <div>{{ product.description|linebreaks }}</div>
 {% endblock content %}
+
+{% block extra_body %}
+<script>
+    // Zeichenzähler für das Personalisierungsfeld, z. B. "42 / 150"
+    document.querySelectorAll("[data-char-counter]").forEach(function (field) {
+        var output = document.getElementById(field.dataset.charCounter);
+        var update = function () {
+            output.textContent = field.value.length + " / " + field.maxLength;
+        };
+        field.addEventListener("input", update);
+        update();
+    });
+</script>
+{% endblock extra_body %}

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 00:19+0200\n"
+"POT-Creation-Date: 2026-10-10 22:43+0200\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgid "Price"
 msgstr "Preis"
 
 #: bag/templates/bag/bag_detail.html:15 bag/templates/bag/bag_detail.html:28
-#: products/templates/products/product_detail.html:30
+#: products/templates/products/product_detail.html:69
 msgid "Quantity"
 msgstr "Menge"
 
@@ -271,18 +271,18 @@ msgstr ""
 "Von %(name)s sind nur noch %(stock)s Stück verfügbar. Bitte passe deinen "
 "Warenkorb an."
 
-#: checkout/views.py:126
+#: checkout/views.py:127
 msgid "The payment could not be started right now. Please try again later."
 msgstr ""
 "Die Zahlung konnte gerade nicht gestartet werden. Bitte versuche es später "
 "noch einmal."
 
 # --- Einstellungen ---
-#: config/settings.py:129
+#: config/settings.py:130
 msgid "German"
 msgstr "Deutsch"
 
-#: config/settings.py:130
+#: config/settings.py:131
 msgid "English"
 msgstr "Englisch"
 
@@ -304,30 +304,50 @@ msgstr "Hier entstehen bald die Produkte."
 msgid "All products"
 msgstr "Alle Produkte"
 
-#: products/templates/products/product_detail.html:23
+#: products/templates/products/product_detail.html:22
 msgid "Category:"
 msgstr "Kategorie:"
 
-#: products/templates/products/product_detail.html:27
-#: products/templates/products/product_list.html:44
+#: products/templates/products/product_detail.html:26
+msgid "Version"
+msgstr "Ausführung"
+
+#: products/templates/products/product_detail.html:30
+msgid "sold out"
+msgstr "ausverkauft"
+
+#: products/templates/products/product_detail.html:34
+msgid "Choose"
+msgstr "Wählen"
+
+#: products/templates/products/product_detail.html:48
+#: products/templates/products/product_list.html:52
 msgid "In stock"
 msgstr "Lieferbar"
 
-#: products/templates/products/product_detail.html:27
+#: products/templates/products/product_detail.html:48
 #, python-format
 msgid "only %(stock)s left"
 msgstr "nur noch %(stock)s Stück"
 
-#: products/templates/products/product_detail.html:32
+#: products/templates/products/product_detail.html:56
+msgid "Personalization"
+msgstr "Personalisierung"
+
+#: products/templates/products/product_detail.html:65
+msgid "Personalized items are excluded from returns."
+msgstr "Personalisierte Artikel sind von der Rückgabe ausgeschlossen."
+
+#: products/templates/products/product_detail.html:71
 msgid "Add to bag"
 msgstr "In den Warenkorb"
 
-#: products/templates/products/product_detail.html:35
-#: products/templates/products/product_list.html:44
+#: products/templates/products/product_detail.html:74
+#: products/templates/products/product_list.html:52
 msgid "Sold out"
 msgstr "Ausverkauft"
 
-#: products/templates/products/product_detail.html:39
+#: products/templates/products/product_detail.html:78
 msgid "Item number:"
 msgstr "Artikelnummer:"
 
@@ -382,6 +402,11 @@ msgid "for “%(query)s”"
 msgstr "für „%(query)s“"
 
 #: products/templates/products/product_list.html:47
+#, python-format
+msgid "from CHF %(price)s"
+msgstr "ab CHF %(price)s"
+
+#: products/templates/products/product_list.html:55
 msgid "No products yet."
 msgstr "Noch keine Produkte vorhanden."
 
