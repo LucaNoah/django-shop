@@ -1,10 +1,12 @@
+import hashlib
 from decimal import Decimal
 
 from django.conf import settings
 
-from products.models import Product
+from products.models import ProductVariant
 
-SESSION_KEY = "bag"
+# Neuer Name, damit alte Warenkörbe (nur Produkt-IDs) nicht stören
+SESSION_KEY = "bag_v2"
 
 
 def calculate_delivery(total):
@@ -14,65 +16,124 @@ def calculate_delivery(total):
     return settings.STANDARD_DELIVERY_COST
 
 
+def make_key(variant_id, personalization):
+    """Eindeutiger Schlüssel einer Position aus Variante und Text, z. B. "12-3f9a1c0b7d"."""
+    digest = hashlib.sha1(personalization.encode("utf-8")).hexdigest()[:10]
+    return f"{variant_id}-{digest}"
+
+
 class Bag:
     """Warenkorb eines Besuchers, gespeichert in seiner Session.
 
-    In der Session steht nur {Produkt-ID: Menge}, z. B. {"3": 2}.
+    In der Session steht je Position:
+    {"12-3f9a1c0b7d": {"variant": 12, "personalization": "Für Anna", "quantity": 2}}
     Preise werden immer frisch aus der Datenbank gelesen.
     """
 
     def __init__(self, request):
         self.session = request.session
-        self.items = self.session.get(SESSION_KEY, {})
+        self.lines = self.session.get(SESSION_KEY, {})
 
     def _save(self):
-        self.session[SESSION_KEY] = self.items
+        self.session[SESSION_KEY] = self.lines
+        self.session.modified = True
 
-    def get_quantity(self, product):
-        """Menge eines Produkts im Warenkorb (0, wenn nicht drin)."""
-        return self.items.get(str(product.id), 0)
+    def _reserved(self, variant_id, except_key=None):
+        """Stück dieser Variante, die schon in anderen Positionen liegen."""
+        return sum(
+            line["quantity"]
+            for key, line in self.lines.items()
+            if line["variant"] == variant_id and key != except_key
+        )
 
-    def set_quantity(self, product, quantity):
-        """Menge setzen. 0 oder weniger entfernt das Produkt.
-
-        Mehr als der Lagerbestand ist nicht möglich.
-        """
-        key = str(product.id)
-        quantity = min(quantity, product.stock)
+    def _set(self, key, variant, quantity, personalization):
+        """Menge einer Position setzen, höchstens so viel wie noch auf Lager ist."""
+        available = max(variant.stock - self._reserved(variant.id, except_key=key), 0)
+        quantity = min(quantity, available)
         if quantity > 0:
-            self.items[key] = quantity
+            self.lines[key] = {
+                "variant": variant.id,
+                "personalization": personalization,
+                "quantity": quantity,
+            }
         else:
-            self.items.pop(key, None)
+            self.lines.pop(key, None)
         self._save()
+        return quantity
 
-    def remove(self, product):
-        """Produkt komplett aus dem Warenkorb nehmen."""
-        self.items.pop(str(product.id), None)
+    def add(self, variant, quantity, personalization=""):
+        """Variante hinzufügen. Gibt (gewünschte Menge, tatsächliche Menge) zurück."""
+        key = make_key(variant.id, personalization)
+        wanted = self.lines.get(key, {}).get("quantity", 0) + quantity
+        actual = self._set(key, variant, wanted, personalization)
+        return wanted, actual
+
+    def update(self, key, quantity):
+        """Menge einer Position ändern. Gibt (Variante, tatsächliche Menge) zurück."""
+        line = self.lines.get(key)
+        if line is None:
+            return None, 0
+        variant = (
+            ProductVariant.objects.select_related("product")
+            .filter(id=line["variant"])
+            .first()
+        )
+        if variant is None:
+            self.lines.pop(key, None)
+            self._save()
+            return None, 0
+        actual = self._set(key, variant, quantity, line["personalization"])
+        return variant, actual
+
+    def remove(self, key):
+        """Position entfernen. Gibt die Variante zurück (oder None)."""
+        line = self.lines.pop(key, None)
         self._save()
+        if line is None:
+            return None
+        return (
+            ProductVariant.objects.select_related("product")
+            .filter(id=line["variant"])
+            .first()
+        )
 
     def clear(self):
         """Warenkorb komplett leeren."""
-        self.items = {}
+        self.lines = {}
         self._save()
 
     def get_items(self):
-        """Liste der Positionen mit Produkt, Menge und Zwischensumme."""
-        products = Product.objects.filter(id__in=self.items.keys(), is_active=True)
-        return [
-            {
-                "product": product,
-                "quantity": self.items[str(product.id)],
-                "subtotal": product.price * self.items[str(product.id)],
-            }
-            for product in products
-        ]
+        """Liste der Positionen mit Variante, Text, Menge und Preisen."""
+        variant_ids = {line["variant"] for line in self.lines.values()}
+        variants = ProductVariant.objects.filter(
+            id__in=variant_ids, is_active=True, product__is_active=True
+        ).select_related("product")
+        by_id = {variant.id: variant for variant in variants}
+
+        items = []
+        for key, line in self.lines.items():
+            variant = by_id.get(line["variant"])
+            if variant is None:
+                continue
+            unit_price = variant.current_price
+            items.append(
+                {
+                    "key": key,
+                    "variant": variant,
+                    "product": variant.product,
+                    "personalization": line["personalization"],
+                    "quantity": line["quantity"],
+                    "unit_price": unit_price,
+                    "subtotal": unit_price * line["quantity"],
+                }
+            )
+        return items
 
     def get_summary(self):
         """Alle Zahlen des Warenkorbs auf einen Blick."""
         items = self.get_items()
         total = sum((item["subtotal"] for item in items), Decimal("0.00"))
         count = sum(item["quantity"] for item in items)
-
         delivery = calculate_delivery(total)
 
         return {

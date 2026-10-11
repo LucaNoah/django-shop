@@ -20,18 +20,24 @@
     <tbody>
         {% for item in bag_items %}
         <tr>
-            <td><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></td>
-            <td>CHF {{ item.product.price }}</td>
             <td>
-                <form method="post" action="{% url 'bag:update' item.product.id %}">
+                <a href="{{ item.product.get_absolute_url }}?variant={{ item.variant.id }}">{{ item.product.name }}</a>
+                {% if item.variant.name %}<br>{{ item.variant.name }}{% endif %}
+                {% if item.personalization %}
+                <br><small>{% translate "Your text:" %} „{{ item.personalization|linebreaksbr }}“</small>
+                {% endif %}
+            </td>
+            <td>CHF {{ item.unit_price }}</td>
+            <td>
+                <form method="post" action="{% url 'bag:update' item.key %}">
                     {% csrf_token %}
-                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" aria-label="{% translate 'Quantity' %}">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" aria-label="{% translate 'Quantity' %}">
                     <button type="submit">{% translate "Update" %}</button>
                 </form>
             </td>
             <td>CHF {{ item.subtotal }}</td>
             <td>
-                <form method="post" action="{% url 'bag:remove' item.product.id %}">
+                <form method="post" action="{% url 'bag:remove' item.key %}">
                     {% csrf_token %}
                     <button type="submit">{% translate "Remove" %}</button>
                 </form>

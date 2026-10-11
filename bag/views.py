@@ -23,71 +23,100 @@ def bag_detail(request):
 
 @require_POST
 def bag_add(request, product_id):
-    """Produkt in den Warenkorb legen oder Menge erhöhen."""
+    """Gewählte Ausführung (mit optionalem Text) in den Warenkorb legen."""
     product = get_object_or_404(Product, id=product_id, is_active=True)
-    if not product.is_in_stock:
-        messages.error(
-            request,
-            _("%(name)s is unfortunately sold out.") % {"name": product.name},
-        )
+
+    # Gewählte Ausführung prüfen
+    try:
+        variant_id = int(request.POST.get("variant", ""))
+    except ValueError:
+        variant_id = None
+    variant = None
+    if variant_id:
+        variant = product.variants.filter(id=variant_id, is_active=True).first()
+    if variant is None:
+        messages.error(request, _("This version is not available."))
         return redirect(product.get_absolute_url())
 
-    bag = Bag(request)
-    wanted = bag.get_quantity(product) + max(_get_quantity(request), 1)
-    bag.set_quantity(product, wanted)
-    actual = bag.get_quantity(product)
+    back = f"{product.get_absolute_url()}?variant={variant.id}"
+
+    # Personalisierung prüfen
+    personalization = ""
+    if product.personalization_enabled:
+        personalization = (
+            request.POST.get("personalization", "").replace("\r\n", "\n").strip()
+        )
+        if product.personalization_required and not personalization:
+            messages.error(request, _("Please enter your personalization text."))
+            return redirect(back)
+        if len(personalization) > variant.personalization_max_length:
+            messages.error(
+                request,
+                _("Your text is too long (maximum %(max)s characters).")
+                % {"max": variant.personalization_max_length},
+            )
+            return redirect(back)
+
+    if not variant.is_in_stock:
+        messages.error(
+            request, _("%(name)s is unfortunately sold out.") % {"name": variant}
+        )
+        return redirect(back)
+
+    wanted, actual = Bag(request).add(
+        variant, max(_get_quantity(request), 1), personalization
+    )
 
     if actual < wanted:
         messages.warning(
             request,
             _("Only %(stock)s in stock. In your shopping bag: %(quantity)s.")
-            % {"stock": product.stock, "quantity": actual},
+            % {"stock": variant.stock, "quantity": actual},
         )
     else:
         messages.success(
             request,
             _("%(name)s in your shopping bag: %(quantity)s.")
-            % {"name": product.name, "quantity": actual},
+            % {"name": variant, "quantity": actual},
         )
-    return redirect(product.get_absolute_url())
+    return redirect(back)
 
 
 @require_POST
-def bag_update(request, product_id):
-    """Menge im Warenkorb ändern. 0 entfernt das Produkt."""
-    product = get_object_or_404(Product, id=product_id)
-    bag = Bag(request)
+def bag_update(request, key):
+    """Menge einer Position ändern. 0 entfernt sie."""
     wanted = _get_quantity(request)
-    bag.set_quantity(product, wanted)
-    actual = bag.get_quantity(product)
+    variant, actual = Bag(request).update(key, wanted)
+    if variant is None:
+        return redirect("bag:detail")
 
     if actual == 0:
         messages.success(
             request,
-            _("%(name)s was removed from your shopping bag.") % {"name": product.name},
+            _("%(name)s was removed from your shopping bag.") % {"name": variant},
         )
     elif actual < wanted:
         messages.warning(
             request,
             _("Only %(stock)s in stock. Quantity set to %(quantity)s.")
-            % {"stock": product.stock, "quantity": actual},
+            % {"stock": variant.stock, "quantity": actual},
         )
     else:
         messages.success(
             request,
             _("Quantity of %(name)s changed to %(quantity)s.")
-            % {"name": product.name, "quantity": actual},
+            % {"name": variant, "quantity": actual},
         )
     return redirect("bag:detail")
 
 
 @require_POST
-def bag_remove(request, product_id):
-    """Produkt komplett aus dem Warenkorb nehmen."""
-    product = get_object_or_404(Product, id=product_id)
-    Bag(request).remove(product)
-    messages.success(
-        request,
-        _("%(name)s was removed from your shopping bag.") % {"name": product.name},
-    )
+def bag_remove(request, key):
+    """Position komplett aus dem Warenkorb nehmen."""
+    variant = Bag(request).remove(key)
+    if variant is not None:
+        messages.success(
+            request,
+            _("%(name)s was removed from your shopping bag.") % {"name": variant},
+        )
     return redirect("bag:detail")
