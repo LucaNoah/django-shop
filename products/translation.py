@@ -10,7 +10,14 @@ class CategoryTranslationOptions(TranslationOptions):
 
 @register(Product)
 class ProductTranslationOptions(TranslationOptions):
-    fields = ("name", "description", "personalization_label", "personalization_help")
+    fields = (
+        "name",
+        "description",
+        "personalization_label",
+        "personalization_help",
+        "meta_title",
+        "meta_description",
+    )
 
 
 @register(ProductVariant)

@@ -27,7 +27,7 @@
     <select name="variant" id="variant" onchange="this.form.submit()">
         {% for variant in variants %}
         <option value="{{ variant.id }}" {% if variant == selected_variant %}selected{% endif %}>
-            {{ variant.name|default:product.name }} – CHF {{ variant.current_price }}{% if not variant.is_in_stock %} ({% translate "sold out" %}){% endif %}
+            {{ variant.name|default:product.name }} – CHF {{ variant.current_price }}{% if variant.is_on_sale %} ({% blocktranslate with price=variant.price %}instead of CHF {{ price }}{% endblocktranslate %}){% endif %}{% if not variant.is_in_stock %} ({% translate "sold out" %}){% endif %}
         </option>
         {% endfor %}
     </select>

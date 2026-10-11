@@ -35,6 +35,7 @@
 <div class="product-grid">
 {% for product in products %}
 <article class="product-card">
+    {% if product.is_on_sale %}<p class="badge badge-sale">{% translate "Sale" %}</p>{% endif %}
     <h2><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
     {% with cover=product.cover_image %}
     {% if cover %}
@@ -46,7 +47,10 @@
         {% if product.has_price_range %}
             {% blocktranslate with price=product.price_from %}from CHF {{ price }}{% endblocktranslate %}
         {% else %}
-            CHF {{ product.price_from }}
+            {% with variant=product.active_variants.0 %}
+            {% if variant.is_on_sale %}<del>CHF {{ variant.price }}</del>{% endif %}
+            CHF {{ variant.current_price }}
+            {% endwith %}
         {% endif %}
     </p>
     <p>{% if product.is_available %}{% translate "In stock" %}{% else %}{% translate "Sold out" %}{% endif %}</p>

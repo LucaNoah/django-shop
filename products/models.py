@@ -39,6 +39,10 @@ class Product(models.Model):
     personalization_label = models.CharField(max_length=100, blank=True)
     personalization_help = models.CharField(max_length=200, blank=True)
 
+    # Für Suchmaschinen (Ausgabe folgt in Phase 14)
+    meta_title = models.CharField(max_length=70, blank=True)
+    meta_description = models.CharField(max_length=160, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,6 +75,11 @@ class Product(models.Model):
     def is_available(self):
         """True, wenn mindestens eine Variante auf Lager ist."""
         return any(variant.is_in_stock for variant in self.active_variants)
+
+    @property
+    def is_on_sale(self):
+        """True, wenn mindestens eine Variante einen Sale-Preis hat."""
+        return any(variant.is_on_sale for variant in self.active_variants)
 
     @property
     def cover_image(self):

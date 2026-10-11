@@ -30,7 +30,10 @@
                 </details>
                 {% endif %}
             </td>
-            <td>CHF {{ item.unit_price }}</td>
+            <td>
+                {% if item.variant.is_on_sale %}<del>CHF {{ item.variant.price }}</del><br>{% endif %}
+                CHF {{ item.unit_price }}
+            </td>
             <td>
                 <form method="post" action="{% url 'bag:update' item.key %}">
                     {% csrf_token %}
