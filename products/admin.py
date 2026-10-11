@@ -41,9 +41,26 @@ class ProductImageInline(TranslationTabularInline):
 
 @admin.register(Product)
 class ProductAdmin(TranslationAdmin):
-    list_display = ["name", "category", "price", "stock", "is_active"]
-    list_editable = ["price", "stock", "is_active"]
+    list_display = [
+        "name",
+        "category",
+        "price_from_display",
+        "stock_total",
+        "is_active",
+    ]
+    list_editable = ["is_active"]
     list_filter = ["category", "is_active", "personalization_enabled"]
     search_fields = ["name", "sku", "description"]
     prepopulated_fields = {"slug": ["name_de"]}
     inlines = [ProductVariantInline, ProductImageInline]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("variants")
+
+    @admin.display(description="Price from")
+    def price_from_display(self, obj):
+        return obj.price_from
+
+    @admin.display(description="Stock")
+    def stock_total(self, obj):
+        return sum(variant.stock for variant in obj.active_variants)

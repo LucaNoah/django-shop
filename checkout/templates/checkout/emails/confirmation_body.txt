@@ -6,8 +6,9 @@
 {% translate "Date:" %} {{ order.created_at|date:"d.m.Y H:i" }}
 
 {% translate "Items:" %}
-{% for item in order.lineitems.all %}- {{ item.quantity }} × {{ item.product_name }} (CHF {{ item.unit_price }}) = CHF {{ item.lineitem_total }}
-{% endfor %}
+{% for item in order.lineitems.all %}- {{ item.quantity }} × {{ item.display_name }} (CHF {{ item.unit_price }}) = CHF {{ item.lineitem_total }}
+{% if item.personalization %}  {% translate "Your text:" %} „{{ item.personalization }}“
+{% endif %}{% endfor %}
 {% translate "Items total:" %} CHF {{ order.order_total }}
 {% translate "Delivery:" %} CHF {{ order.delivery_cost }}
 {% translate "Total:" %} CHF {{ order.grand_total }}

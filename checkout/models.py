@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from bag.bag import calculate_delivery
-from products.models import Product
+from products.models import Product, ProductVariant
 
 
 class Order(models.Model):
@@ -45,7 +45,6 @@ class Order(models.Model):
 
     stripe_session_id = models.CharField(max_length=255, blank=True)
     paid_at = models.DateTimeField(null=True, blank=True)
-
     language = models.CharField(max_length=10, default="de")
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -73,13 +72,22 @@ class Order(models.Model):
 
 
 class OrderLineItem(models.Model):
-    """Eine Position einer Bestellung, mit Preis zum Kaufzeitpunkt."""
+    """Eine Position einer Bestellung, mit Namen und Preis zum Kaufzeitpunkt."""
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="lineitems")
     product = models.ForeignKey(
         Product, on_delete=models.PROTECT, related_name="order_items"
     )
+    variant = models.ForeignKey(
+        ProductVariant,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="order_items",
+    )
     product_name = models.CharField(max_length=200, blank=True)
+    variant_name = models.CharField(max_length=100, blank=True)
+    personalization = models.TextField(blank=True)
     unit_price = models.DecimalField(
         max_digits=8, decimal_places=2, blank=True, null=True
     )
@@ -89,13 +97,23 @@ class OrderLineItem(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        """Leere Felder vom Produkt übernehmen, Positionssumme berechnen."""
+        """Leere Felder aus Produkt und Variante übernehmen, Summe berechnen."""
         if not self.product_name:
             self.product_name = self.product.name
-        if self.unit_price is None:
-            self.unit_price = self.product.price
+        if self.variant:
+            if not self.variant_name:
+                self.variant_name = self.variant.name
+            if self.unit_price is None:
+                self.unit_price = self.variant.current_price
         self.lineitem_total = self.unit_price * self.quantity
         super().save(*args, **kwargs)
 
+    @property
+    def display_name(self):
+        """Name für Anzeige, Stripe und Mail, z. B. „Psalm 23 – 30 × 20 cm, geölt“."""
+        if self.variant_name:
+            return f"{self.product_name} – {self.variant_name}"
+        return self.product_name
+
     def __str__(self):
-        return f"{self.quantity} × {self.product_name}"
+        return f"{self.quantity} × {self.display_name}"

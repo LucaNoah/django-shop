@@ -30,9 +30,6 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField()
-    # Alte Felder, werden in Schritt 9.4 entfernt
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to="products/", blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -53,11 +50,6 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("products:product_detail", args=[self.slug])
-
-    @property
-    def is_in_stock(self):
-        """Altes Lagerfeld, wird in Schritt 9.4 durch is_available ersetzt."""
-        return self.stock > 0
 
     @property
     def active_variants(self):

@@ -6,6 +6,16 @@ from .models import Order, OrderLineItem
 class OrderLineItemInline(admin.TabularInline):
     model = OrderLineItem
     extra = 0
+    fields = [
+        "product",
+        "variant",
+        "product_name",
+        "variant_name",
+        "personalization",
+        "unit_price",
+        "quantity",
+        "lineitem_total",
+    ]
     readonly_fields = ["lineitem_total"]
 
 

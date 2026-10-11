@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from products.models import Product
+from products.models import ProductVariant
 
 from .emails import send_order_confirmation
 from .models import Order
@@ -50,9 +50,10 @@ def mark_order_paid(order_number):
             return  # unbekannt oder schon erledigt
 
         for item in order.lineitems.all():
-            Product.objects.filter(pk=item.product_id).update(
-                stock=Greatest(F("stock") - item.quantity, 0)
-            )
+            if item.variant_id:
+                ProductVariant.objects.filter(pk=item.variant_id).update(
+                    stock=Greatest(F("stock") - item.quantity, 0)
+                )
 
         order.status = Order.Status.PAID
         order.paid_at = timezone.now()

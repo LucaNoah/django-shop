@@ -24,17 +24,21 @@ def to_rappen(amount):
 
 def create_stripe_session(request, order):
     """Zahlungsseite bei Stripe für diese Bestellung anlegen."""
-    line_items = [
-        {
-            "price_data": {
-                "currency": settings.STRIPE_CURRENCY,
-                "product_data": {"name": item.product_name},
-                "unit_amount": to_rappen(item.unit_price),
-            },
-            "quantity": item.quantity,
-        }
-        for item in order.lineitems.all()
-    ]
+    line_items = []
+    for item in order.lineitems.all():
+        product_data = {"name": item.display_name}
+        if item.personalization:
+            product_data["description"] = item.personalization[:500]
+        line_items.append(
+            {
+                "price_data": {
+                    "currency": settings.STRIPE_CURRENCY,
+                    "product_data": product_data,
+                    "unit_amount": to_rappen(item.unit_price),
+                },
+                "quantity": item.quantity,
+            }
+        )
     if order.delivery_cost > 0:
         line_items.append(
             {
@@ -75,17 +79,21 @@ def checkout(request):
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():
-            # Reicht der Lagerbestand noch?
+            # Reicht der Lagerbestand noch? Positionen derselben Ausführung zusammenzählen
+            needed = {}
             for item in items:
-                product = item["product"]
-                if item["quantity"] > product.stock:
+                needed[item["variant"]] = (
+                    needed.get(item["variant"], 0) + item["quantity"]
+                )
+            for variant, quantity in needed.items():
+                if quantity > variant.stock:
                     messages.error(
                         request,
                         _(
                             "Only %(stock)s of %(name)s are available. "
                             "Please adjust your shopping bag."
                         )
-                        % {"stock": product.stock, "name": product.name},
+                        % {"stock": variant.stock, "name": variant},
                     )
                     return redirect("bag:detail")
 
@@ -94,14 +102,17 @@ def checkout(request):
                 order = form.save(commit=False)
                 if request.user.is_authenticated:
                     order.user = request.user
-                order.language = get_language()  # NEU: Sprache der Bestellung merken
+                order.language = get_language()
                 order.save()
                 for item in items:
                     OrderLineItem.objects.create(
                         order=order,
                         product=item["product"],
+                        variant=item["variant"],
                         product_name=item["product"].name,
-                        unit_price=item["product"].price,
+                        variant_name=item["variant"].name,
+                        personalization=item["personalization"],
+                        unit_price=item["unit_price"],
                         quantity=item["quantity"],
                     )
                 order.update_total()

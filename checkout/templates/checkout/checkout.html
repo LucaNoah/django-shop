@@ -9,7 +9,10 @@
 <h2>{% translate "Your order" %}</h2>
 <ul>
     {% for item in bag_items %}
-    <li>{{ item.quantity }} × {{ item.product.name }} – CHF {{ item.subtotal }}</li>
+    <li>
+        {{ item.quantity }} × {{ item.product.name }}{% if item.variant.name %} – {{ item.variant.name }}{% endif %} – CHF {{ item.subtotal }}
+        {% if item.personalization %}<br><small>{% translate "Your text:" %} „{{ item.personalization|linebreaksbr }}“</small>{% endif %}
+    </li>
     {% endfor %}
 </ul>
 <p>{% translate "Items total:" %} CHF {{ bag_total }}</p>
