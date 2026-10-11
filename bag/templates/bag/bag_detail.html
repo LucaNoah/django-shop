@@ -24,7 +24,10 @@
                 <a href="{{ item.product.get_absolute_url }}?variant={{ item.variant.id }}">{{ item.product.name }}</a>
                 {% if item.variant.name %}<br>{{ item.variant.name }}{% endif %}
                 {% if item.personalization %}
-                <br><small>{% translate "Your text:" %} „{{ item.personalization|linebreaksbr }}“</small>
+                <details class="personalization">
+                    <summary>{% translate "Personalized" %} – {% translate "Show text" %}</summary>
+                    <p>{{ item.personalization|linebreaksbr }}</p>
+                </details>
                 {% endif %}
             </td>
             <td>CHF {{ item.unit_price }}</td>

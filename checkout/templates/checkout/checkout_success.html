@@ -19,7 +19,12 @@
     {% for item in order.lineitems.all %}
     <li>
         {{ item.quantity }} × {{ item.display_name }} (CHF {{ item.unit_price }}) = CHF {{ item.lineitem_total }}
-        {% if item.personalization %}<br><small>{% translate "Your text:" %} „{{ item.personalization|linebreaksbr }}“</small>{% endif %}
+        {% if item.personalization %}
+        <details class="personalization">
+            <summary>{% translate "Personalized" %} – {% translate "Show text" %}</summary>
+            <p>{{ item.personalization|linebreaksbr }}</p>
+        </details>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>

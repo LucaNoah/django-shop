@@ -11,7 +11,12 @@
     {% for item in bag_items %}
     <li>
         {{ item.quantity }} × {{ item.product.name }}{% if item.variant.name %} – {{ item.variant.name }}{% endif %} – CHF {{ item.subtotal }}
-        {% if item.personalization %}<br><small>{% translate "Your text:" %} „{{ item.personalization|linebreaksbr }}“</small>{% endif %}
+        {% if item.personalization %}
+        <details class="personalization">
+            <summary>{% translate "Personalized" %} – {% translate "Show text" %}</summary>
+            <p>{{ item.personalization|linebreaksbr }}</p>
+        </details>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
