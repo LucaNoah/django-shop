@@ -1,15 +1,17 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(models.Model):
     """Produktkategorie, z. B. Bibelverse oder Kunstobjekte."""
 
-    name = models.CharField(max_length=100, unique=True)
-    display_name = models.CharField(max_length=100, blank=True)
+    name = models.CharField(_("internal name"), max_length=100, unique=True)
+    display_name = models.CharField(_("display name"), max_length=100, blank=True)
 
     class Meta:
-        verbose_name_plural = "Categories"
+        verbose_name = _("category")
+        verbose_name_plural = _("categories")
         ordering = ["name"]
 
     def __str__(self):
@@ -21,32 +23,47 @@ class Product(models.Model):
 
     category = models.ForeignKey(
         Category,
+        verbose_name=_("category"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="products",
     )
-    sku = models.CharField("SKU", max_length=30, blank=True)
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
-    description = models.TextField()
-    image = models.ImageField(upload_to="products/", blank=True)
-    is_active = models.BooleanField(default=True)
+    sku = models.CharField(_("item number"), max_length=30, blank=True)
+    name = models.CharField(_("name"), max_length=200)
+    slug = models.SlugField(_("URL name"), max_length=200, unique=True)
+    description = models.TextField(_("description"))
+    image = models.ImageField(_("main image"), upload_to="products/", blank=True)
+    is_active = models.BooleanField(
+        _("active"), default=True, help_text=_("Visible in the shop")
+    )
 
     # Personalisierung (eigener Text des Kunden, z. B. Bibelvers oder Widmung)
-    personalization_enabled = models.BooleanField(default=False)
-    personalization_required = models.BooleanField(default=False)
-    personalization_label = models.CharField(max_length=100, blank=True)
-    personalization_help = models.CharField(max_length=200, blank=True)
+    personalization_enabled = models.BooleanField(
+        _("personalization possible"), default=False
+    )
+    personalization_required = models.BooleanField(
+        _("personalization required"), default=False
+    )
+    personalization_label = models.CharField(
+        _("label of the text field"), max_length=100, blank=True
+    )
+    personalization_help = models.CharField(
+        _("hint below the text field"), max_length=200, blank=True
+    )
 
     # Für Suchmaschinen (Ausgabe folgt in Phase 14)
-    meta_title = models.CharField(max_length=70, blank=True)
-    meta_description = models.CharField(max_length=160, blank=True)
+    meta_title = models.CharField(_("meta title"), max_length=70, blank=True)
+    meta_description = models.CharField(
+        _("meta description"), max_length=160, blank=True
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(_("created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("updated"), auto_now=True)
 
     class Meta:
+        verbose_name = _("product")
+        verbose_name_plural = _("products")
         ordering = ["name"]
 
     def __str__(self):
@@ -98,21 +115,33 @@ class ProductVariant(models.Model):
 
     product = models.ForeignKey(
         Product,
+        verbose_name=_("product"),
         on_delete=models.CASCADE,
         related_name="variants",
     )
-    name = models.CharField(max_length=100, blank=True)
-    sku = models.CharField("SKU", max_length=30, blank=True)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    sale_price = models.DecimalField(
-        max_digits=8, decimal_places=2, null=True, blank=True
+    name = models.CharField(
+        _("name"),
+        max_length=100,
+        blank=True,
+        help_text=_("Leave empty if the product has only one version."),
     )
-    stock = models.PositiveIntegerField(default=0)
-    personalization_max_length = models.PositiveSmallIntegerField(default=100)
-    position = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    sku = models.CharField(_("item number"), max_length=30, blank=True)
+    price = models.DecimalField(_("price"), max_digits=8, decimal_places=2)
+    sale_price = models.DecimalField(
+        _("sale price"), max_digits=8, decimal_places=2, null=True, blank=True
+    )
+    stock = models.PositiveIntegerField(_("stock"), default=0)
+    personalization_max_length = models.PositiveSmallIntegerField(
+        _("max. characters"),
+        default=100,
+        help_text=_("Only relevant if personalization is possible."),
+    )
+    position = models.PositiveIntegerField(_("position"), default=0)
+    is_active = models.BooleanField(_("active"), default=True)
 
     class Meta:
+        verbose_name = _("version")
+        verbose_name_plural = _("versions")
         ordering = ["position", "id"]
 
     def __str__(self):
@@ -145,21 +174,26 @@ class ProductImage(models.Model):
 
     product = models.ForeignKey(
         Product,
+        verbose_name=_("product"),
         on_delete=models.CASCADE,
         related_name="images",
     )
     variant = models.ForeignKey(
         ProductVariant,
+        verbose_name=_("version"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="images",
+        help_text=_("Empty = for all versions."),
     )
-    image = models.ImageField(upload_to="products/gallery/")
-    alt_text = models.CharField(max_length=200, blank=True)
-    position = models.PositiveIntegerField(default=0)
+    image = models.ImageField(_("image"), upload_to="products/gallery/")
+    alt_text = models.CharField(_("alternative text"), max_length=200, blank=True)
+    position = models.PositiveIntegerField(_("position"), default=0)
 
     class Meta:
+        verbose_name = _("image")
+        verbose_name_plural = _("images")
         ordering = ["position", "id"]
 
     def __str__(self):

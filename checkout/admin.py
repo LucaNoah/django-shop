@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Order, OrderLineItem
 
@@ -41,4 +42,17 @@ class OrderAdmin(admin.ModelAdmin):
         "stripe_session_id",
         "paid_at",
         "language",
+    ]
+    fieldsets = [
+        (
+            _("Order"),
+            {"fields": ["order_number", "status", "created_at", "language", "user"]},
+        ),
+        (_("Customer"), {"fields": ["full_name", "email", "phone_number"]}),
+        (
+            _("Delivery address"),
+            {"fields": ["street_address", "postcode", "town_or_city", "country"]},
+        ),
+        (_("Amounts"), {"fields": ["order_total", "delivery_cost", "grand_total"]}),
+        (_("Payment"), {"fields": ["stripe_session_id", "paid_at"]}),
     ]

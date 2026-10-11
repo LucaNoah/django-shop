@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-11 14:38+0200\n"
+"POT-Creation-Date: 2026-10-11 14:53+0200\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -138,6 +138,27 @@ msgstr "Nur %(stock)s Stück auf Lager. Menge auf %(quantity)s gesetzt."
 msgid "Quantity of %(name)s changed to %(quantity)s."
 msgstr "Menge von %(name)s auf %(quantity)s geändert."
 
+#: checkout/admin.py:48
+msgid "Order"
+msgstr "Bestellung"
+
+#: checkout/admin.py:51
+msgid "Customer"
+msgstr "Kunde"
+
+#: checkout/admin.py:53 checkout/templates/checkout/checkout.html:27
+#: checkout/templates/checkout/checkout_success.html:35
+msgid "Delivery address"
+msgstr "Lieferadresse"
+
+#: checkout/admin.py:56
+msgid "Amounts"
+msgstr "Beträge"
+
+#: checkout/admin.py:57
+msgid "Payment"
+msgstr "Zahlung"
+
 #: checkout/forms.py:22 profiles/forms.py:19
 msgid "First and last name"
 msgstr "Vor- und Nachname"
@@ -182,6 +203,119 @@ msgstr "Versendet"
 msgid "Cancelled"
 msgstr "Storniert"
 
+#: checkout/models.py:23
+msgid "order number"
+msgstr "Bestellnummer"
+
+#: checkout/models.py:27
+msgid "customer account"
+msgstr "Kundenkonto"
+
+#: checkout/models.py:34
+msgid "status"
+msgstr "Status"
+
+#: checkout/models.py:37
+msgid "full name"
+msgstr "Name"
+
+#: checkout/models.py:38
+msgid "email"
+msgstr "E-Mail"
+
+#: checkout/models.py:39
+msgid "phone"
+msgstr "Telefon"
+
+#: checkout/models.py:40
+msgid "street and house number"
+msgstr "Strasse und Hausnummer"
+
+#: checkout/models.py:41
+msgid "postcode"
+msgstr "PLZ"
+
+#: checkout/models.py:42
+msgid "town or city"
+msgstr "Ort"
+
+#: checkout/models.py:43
+msgid "country"
+msgstr "Land"
+
+#: checkout/models.py:46
+msgid "items total"
+msgstr "Warenwert"
+
+#: checkout/models.py:49
+msgid "delivery"
+msgstr "Versand"
+
+#: checkout/models.py:52 checkout/models.py:118
+msgid "total"
+msgstr "Total"
+
+#: checkout/models.py:56
+msgid "Stripe session"
+msgstr "Stripe-Sitzung"
+
+#: checkout/models.py:58
+msgid "paid at"
+msgstr "Bezahlt am"
+
+#: checkout/models.py:59
+msgid "language"
+msgstr "Sprache"
+
+#: checkout/models.py:61 products/models.py:61
+msgid "created"
+msgstr "Erstellt"
+
+#: checkout/models.py:64 checkout/models.py:92
+msgid "order"
+msgstr "Bestellung"
+
+#: checkout/models.py:65
+msgid "orders"
+msgstr "Bestellungen"
+
+#: checkout/models.py:98 products/models.py:65 products/models.py:118
+#: products/models.py:177
+msgid "product"
+msgstr "Produkt"
+
+#: checkout/models.py:104 products/models.py:143 products/models.py:183
+msgid "version"
+msgstr "Ausführung"
+
+#: checkout/models.py:110
+msgid "product name"
+msgstr "Produktname"
+
+#: checkout/models.py:111
+msgid "version name"
+msgstr "Ausführungsname"
+
+#: checkout/models.py:112
+msgid "personalization text"
+msgstr "Personalisierungstext"
+
+#: checkout/models.py:114
+msgid "unit price"
+msgstr "Stückpreis"
+
+#: checkout/models.py:116
+msgid "quantity"
+msgstr "Menge"
+
+#: checkout/models.py:122
+msgid "order item"
+msgstr "Bestellposition"
+
+#: checkout/models.py:123
+msgid "order items"
+msgstr "Bestellpositionen"
+
 # --- Kasse ---
 #: checkout/templates/checkout/checkout.html:4
 #: checkout/templates/checkout/checkout.html:7
@@ -191,11 +325,6 @@ msgstr "Kasse"
 #: checkout/templates/checkout/checkout.html:9
 msgid "Your order"
 msgstr "Deine Bestellung"
-
-#: checkout/templates/checkout/checkout.html:27
-#: checkout/templates/checkout/checkout_success.html:35
-msgid "Delivery address"
-msgstr "Lieferadresse"
 
 #: checkout/templates/checkout/checkout.html:35
 msgid "Save this address to my account"
@@ -315,6 +444,14 @@ msgstr "Deutsch"
 msgid "English"
 msgstr "Englisch"
 
+#: config/urls.py:11 config/urls.py:12
+msgid "Shop administration"
+msgstr "Shop-Verwaltung"
+
+#: config/urls.py:13
+msgid "Overview"
+msgstr "Übersicht"
+
 #: home/templates/home/index.html:4 templates/base.html:16
 msgid "Home"
 msgstr "Startseite"
@@ -327,6 +464,154 @@ msgstr "Willkommen im Shop"
 #: home/templates/home/index.html:8
 msgid "Our products will appear here soon."
 msgstr "Hier entstehen bald die Produkte."
+
+#: products/admin.py:58
+msgid "Basics"
+msgstr "Grunddaten"
+
+#: products/admin.py:59
+msgid "Description and image"
+msgstr "Beschreibung und Bild"
+
+#: products/admin.py:61 products/templates/products/product_detail.html:56
+msgid "Personalization"
+msgstr "Personalisierung"
+
+#: products/admin.py:72
+msgid "Search engines (SEO)"
+msgstr "Suchmaschinen (SEO)"
+
+#: products/admin.py:80
+msgid "Price from"
+msgstr "Preis ab"
+
+#: products/admin.py:84
+msgid "Stock"
+msgstr "Lager"
+
+#: products/models.py:9
+msgid "internal name"
+msgstr "Interner Name"
+
+#: products/models.py:10
+msgid "display name"
+msgstr "Anzeigename"
+
+#: products/models.py:13 products/models.py:26
+msgid "category"
+msgstr "Kategorie"
+
+#: products/models.py:14
+msgid "categories"
+msgstr "Kategorien"
+
+#: products/models.py:32 products/models.py:128
+msgid "item number"
+msgstr "Artikelnummer"
+
+#: products/models.py:33 products/models.py:123
+msgid "name"
+msgstr "Name"
+
+#: products/models.py:34
+msgid "URL name"
+msgstr "URL-Name"
+
+#: products/models.py:35
+msgid "description"
+msgstr "Beschreibung"
+
+#: products/models.py:36
+msgid "main image"
+msgstr "Hauptbild"
+
+#: products/models.py:38 products/models.py:140
+msgid "active"
+msgstr "Aktiv"
+
+#: products/models.py:38
+msgid "Visible in the shop"
+msgstr "Im Shop sichtbar"
+
+#: products/models.py:43
+msgid "personalization possible"
+msgstr "Personalisierung möglich"
+
+#: products/models.py:46
+msgid "personalization required"
+msgstr "Personalisierung ist Pflicht"
+
+#: products/models.py:49
+msgid "label of the text field"
+msgstr "Beschriftung des Textfelds"
+
+#: products/models.py:52
+msgid "hint below the text field"
+msgstr "Hinweis unter dem Textfeld"
+
+#: products/models.py:56
+msgid "meta title"
+msgstr "Meta-Titel"
+
+#: products/models.py:58
+msgid "meta description"
+msgstr "Meta-Beschreibung"
+
+#: products/models.py:62
+msgid "updated"
+msgstr "Geändert"
+
+#: products/models.py:66
+msgid "products"
+msgstr "Produkte"
+
+#: products/models.py:126
+msgid "Leave empty if the product has only one version."
+msgstr "Leer lassen, wenn es nur eine Ausführung gibt."
+
+#: products/models.py:129
+msgid "price"
+msgstr "Preis"
+
+#: products/models.py:131
+msgid "sale price"
+msgstr "Sale-Preis"
+
+#: products/models.py:133
+msgid "stock"
+msgstr "Lager"
+
+#: products/models.py:135
+msgid "max. characters"
+msgstr "Max. Zeichen"
+
+#: products/models.py:137
+msgid "Only relevant if personalization is possible."
+msgstr "Nur relevant, wenn Personalisierung möglich ist."
+
+#: products/models.py:139 products/models.py:192
+msgid "position"
+msgstr "Reihenfolge"
+
+#: products/models.py:144
+msgid "versions"
+msgstr "Ausführungen"
+
+#: products/models.py:188
+msgid "Empty = for all versions."
+msgstr "Leer = für alle Ausführungen."
+
+#: products/models.py:190 products/models.py:195
+msgid "image"
+msgstr "Bild"
+
+#: products/models.py:191
+msgid "alternative text"
+msgstr "Alternativtext"
+
+#: products/models.py:196
+msgid "images"
+msgstr "Bilder"
 
 # --- Produktdetail ---
 #: products/templates/products/product_detail.html:7
@@ -363,10 +648,6 @@ msgstr "Lieferbar"
 #, python-format
 msgid "only %(stock)s left"
 msgstr "nur noch %(stock)s Stück"
-
-#: products/templates/products/product_detail.html:56
-msgid "Personalization"
-msgstr "Personalisierung"
 
 #: products/templates/products/product_detail.html:65
 msgid "Personalized items are excluded from returns."

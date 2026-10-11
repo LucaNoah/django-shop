@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from .models import Category, Product, ProductImage, ProductVariant
@@ -32,7 +33,7 @@ class ProductImageInline(TranslationTabularInline):
     fields = ["image", "alt_text", "variant", "position"]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """In der Auswahl „Variante“ nur Varianten dieses Produkts zeigen."""
+        """In der Auswahl „Ausführung“ nur Varianten dieses Produkts zeigen."""
         if db_field.name == "variant":
             object_id = request.resolver_match.kwargs.get("object_id")
             kwargs["queryset"] = ProductVariant.objects.filter(product_id=object_id)
@@ -53,14 +54,33 @@ class ProductAdmin(TranslationAdmin):
     search_fields = ["name", "sku", "description"]
     prepopulated_fields = {"slug": ["name_de"]}
     inlines = [ProductVariantInline, ProductImageInline]
+    fieldsets = [
+        (_("Basics"), {"fields": ["name", "slug", "category", "sku", "is_active"]}),
+        (_("Description and image"), {"fields": ["description", "image"]}),
+        (
+            _("Personalization"),
+            {
+                "fields": [
+                    "personalization_enabled",
+                    "personalization_required",
+                    "personalization_label",
+                    "personalization_help",
+                ]
+            },
+        ),
+        (
+            _("Search engines (SEO)"),
+            {"fields": ["meta_title", "meta_description"], "classes": ["collapse"]},
+        ),
+    ]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("variants")
 
-    @admin.display(description="Price from")
+    @admin.display(description=_("Price from"))
     def price_from_display(self, obj):
         return obj.price_from
 
-    @admin.display(description="Stock")
+    @admin.display(description=_("Stock"))
     def stock_total(self, obj):
         return sum(variant.stock for variant in obj.active_variants)

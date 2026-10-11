@@ -19,37 +19,50 @@ class Order(models.Model):
         SHIPPED = "shipped", _("Shipped")
         CANCELLED = "cancelled", _("Cancelled")
 
-    order_number = models.CharField(max_length=32, unique=True, editable=False)
+    order_number = models.CharField(
+        _("order number"), max_length=32, unique=True, editable=False
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("customer account"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="orders",
     )
     status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.PENDING
+        _("status"), max_length=20, choices=Status.choices, default=Status.PENDING
     )
 
-    full_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=30, blank=True)
-    street_address = models.CharField(max_length=200)
-    postcode = models.CharField(max_length=20)
-    town_or_city = models.CharField(max_length=100)
-    country = CountryField(default="CH")
+    full_name = models.CharField(_("full name"), max_length=100)
+    email = models.EmailField(_("email"))
+    phone_number = models.CharField(_("phone"), max_length=30, blank=True)
+    street_address = models.CharField(_("street and house number"), max_length=200)
+    postcode = models.CharField(_("postcode"), max_length=20)
+    town_or_city = models.CharField(_("town or city"), max_length=100)
+    country = CountryField(_("country"), default="CH")
 
-    order_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    delivery_cost = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    order_total = models.DecimalField(
+        _("items total"), max_digits=10, decimal_places=2, default=0
+    )
+    delivery_cost = models.DecimalField(
+        _("delivery"), max_digits=8, decimal_places=2, default=0
+    )
+    grand_total = models.DecimalField(
+        _("total"), max_digits=10, decimal_places=2, default=0
+    )
 
-    stripe_session_id = models.CharField(max_length=255, blank=True)
-    paid_at = models.DateTimeField(null=True, blank=True)
-    language = models.CharField(max_length=10, default="de")
+    stripe_session_id = models.CharField(
+        _("Stripe session"), max_length=255, blank=True
+    )
+    paid_at = models.DateTimeField(_("paid at"), null=True, blank=True)
+    language = models.CharField(_("language"), max_length=10, default="de")
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(_("created"), auto_now_add=True)
 
     class Meta:
+        verbose_name = _("order")
+        verbose_name_plural = _("orders")
         ordering = ["-created_at"]
 
     def __str__(self):
@@ -74,27 +87,40 @@ class Order(models.Model):
 class OrderLineItem(models.Model):
     """Eine Position einer Bestellung, mit Namen und Preis zum Kaufzeitpunkt."""
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="lineitems")
+    order = models.ForeignKey(
+        Order,
+        verbose_name=_("order"),
+        on_delete=models.CASCADE,
+        related_name="lineitems",
+    )
     product = models.ForeignKey(
-        Product, on_delete=models.PROTECT, related_name="order_items"
+        Product,
+        verbose_name=_("product"),
+        on_delete=models.PROTECT,
+        related_name="order_items",
     )
     variant = models.ForeignKey(
         ProductVariant,
+        verbose_name=_("version"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="order_items",
     )
-    product_name = models.CharField(max_length=200, blank=True)
-    variant_name = models.CharField(max_length=100, blank=True)
-    personalization = models.TextField(blank=True)
+    product_name = models.CharField(_("product name"), max_length=200, blank=True)
+    variant_name = models.CharField(_("version name"), max_length=100, blank=True)
+    personalization = models.TextField(_("personalization text"), blank=True)
     unit_price = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True
+        _("unit price"), max_digits=8, decimal_places=2, blank=True, null=True
     )
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(_("quantity"))
     lineitem_total = models.DecimalField(
-        max_digits=10, decimal_places=2, editable=False
+        _("total"), max_digits=10, decimal_places=2, editable=False
     )
+
+    class Meta:
+        verbose_name = _("order item")
+        verbose_name_plural = _("order items")
 
     def save(self, *args, **kwargs):
         """Leere Felder aus Produkt und Variante übernehmen, Summe berechnen."""
