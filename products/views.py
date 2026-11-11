@@ -69,18 +69,32 @@ def product_detail(request, slug):
     requested = request.GET.get("variant")
     if requested:
         selected_variant = next((v for v in variants if str(v.id) == requested), None)
+    chosen_by_customer = selected_variant is not None
     if selected_variant is None:
         selected_variant = next((v for v in variants if v.is_in_stock), variants[0])
 
-    # Bilder: zuerst die der Ausführung, dann die gemeinsamen, zuletzt das Hauptbild
+    # Bilder sortieren
     all_images = list(product.images.all())
-    pictures = [img for img in all_images if img.variant_id == selected_variant.id]
-    pictures += [img for img in all_images if img.variant_id is None]
-    gallery = [
-        {"url": img.image.url, "alt": img.alt_text or product.name} for img in pictures
+    variant_pictures = [
+        {"url": img.image.url, "alt": img.alt_text or product.name}
+        for img in all_images
+        if img.variant_id == selected_variant.id
     ]
-    if product.image:
-        gallery.append({"url": product.image.url, "alt": product.name})
+    shared_pictures = [
+        {"url": img.image.url, "alt": img.alt_text or product.name}
+        for img in all_images
+        if img.variant_id is None
+    ]
+    main_picture = (
+        [{"url": product.image.url, "alt": product.name}] if product.image else []
+    )
+
+    if chosen_by_customer and variant_pictures:
+        # Kundschaft hat eine Ausführung gewählt: deren Bild zuerst zeigen
+        gallery = variant_pictures + main_picture + shared_pictures
+    else:
+        # Normalfall: Hauptbild zuerst
+        gallery = main_picture + variant_pictures + shared_pictures
 
     context = {
         "product": product,
